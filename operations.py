@@ -45,16 +45,28 @@ def read_one_pelicula(id: int) -> Optional[PeliculaconId]:
     with open(PELICULAS_CSV) as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if int(row["id"]) == id and row["activa"] == "True":
-                return PeliculaconId(**row, id=int(row["id"]), anio=int(row["anio"]), activa=True)
+            if int(row["id"]) == id and row["activa"].lower() == "true":
+                return PeliculaconId(
+                    id=int(row["id"]),
+                    titulo=row["titulo"],
+                    genero=row["genero"],
+                    anio=int(row["anio"]),
+                    estudio=row["estudio"],
+                    activa=True
+                )
+
 
 def new_pelicula(p: Pelicula) -> PeliculaconId:
     id = get_next_id(PELICULAS_CSV)
-    pelicula = PeliculaconId(id=id, **p.model_dump(), activa=True)
+    data = p.model_dump()
+    data["id"] = id
+    data["activa"] = True
+    pelicula = PeliculaconId(**data)
     with open(PELICULAS_CSV, mode="a", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=P_FIELDS)
         writer.writerow(pelicula.model_dump())
     return pelicula
+
 
 def modify_pelicula(id: int, cambios: dict) -> Optional[PeliculaconId]:
     peliculas = read_all_peliculas()
@@ -95,25 +107,55 @@ def filtrar_peliculas_por_genero(genero: str):
 
 # PERSONAJES
 
-def read_all_personajes() -> List[PersonajeconId]:
-    with open(PERSONAJES_CSV) as f:
-        reader = csv.DictReader(f)
-        return [PersonajeconId(**row, id=int(row["id"]), activo=row["activo"] == "True", protagonista=row["protagonista"] == "True") for row in reader if row["activo"] == "True"]
+def read_all_personajes() -> list[PersonajeconId]:
+    personajes = []
+    with open("personajes.csv", "r", newline="") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            personaje = PersonajeconId(
+                id=int(row["id"]),
+                nombre=row["nombre"],
+                protagonista=row["protagonista"].lower() == "true",
+                pelicula=row["pelicula"],
+                activo=row["activo"].lower() == "true"
+            )
+            personajes.append(personaje)
+    return personajes
+
+
 
 def read_one_personaje(id: int) -> Optional[PersonajeconId]:
-    with open(PERSONAJES_CSV) as f:
+    with open(PERSONAJES_CSV, newline="") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if int(row["id"]) == id and row["activo"] == "True":
-                return PersonajeconId(**row, id=int(row["id"]), protagonista=row["protagonista"] == "True", activo=True)
+            try:
+                if int(row["id"]) == id and row["activo"].lower() == "true":
+                    return PersonajeconId(
+                        id=int(row["id"]),
+                        nombre=row["nombre"],
+                        protagonista=row["protagonista"].lower() == "true",
+                        pelicula=row["pelicula"],
+                        activo=True
+                    )
+            except (ValueError, KeyError):
+                print(f"Error en la fila: {row}")
+    return None
+
 
 def new_personaje(p: Personaje) -> PersonajeconId:
     id = get_next_id(PERSONAJES_CSV)
-    personaje = PersonajeconId(id=id, **p.model_dump(), activo=True)
+    personaje = PersonajeconId(
+        id=id,
+        nombre=p.nombre,
+        protagonista=p.protagonista,
+        pelicula=p.pelicula,
+        activo=True
+    )
     with open(PERSONAJES_CSV, mode="a", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=PJ_FIELDS)
         writer.writerow(personaje.model_dump())
     return personaje
+
 
 def modify_personaje(id: int, cambios: dict) -> Optional[PersonajeconId]:
     personajes = read_all_personajes()

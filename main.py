@@ -11,7 +11,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(
         status_code=exc.status_code,
         content={
-            "message": "Ocurrió un error",
+            "message": "Error",
             "detail": exc.detail,
             "path": request.url.path,
         },

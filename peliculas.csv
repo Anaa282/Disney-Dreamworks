@@ -1,3 +1,4 @@
-id,titulo,anio,estudio,genero,activa
-1,toystory,1995,Disney,animada,True2,string,string,1901,string,True
-2,string,string,1901,string,True
+id,titulo,genero,anio,estudio,activa
+1,toystory,animada,1995,Disney,True
+2,shrek,animada,2001,dreamworks,True
+3,encanto,animada,2023,disney,False

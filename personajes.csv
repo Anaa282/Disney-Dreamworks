@@ -1,2 +1,5 @@
 id,nombre,protagonista,pelicula,activo
-1,shrek,true,shrek,True
+1,shrek,True,shrek,True
+2,nemo,True,buscando a nemo,True
+3,woody,True,toy story,True
+4,gato,True,shrek,False
