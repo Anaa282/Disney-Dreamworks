@@ -23,10 +23,23 @@ def get_next_id(filename: str) -> int:
 
 # PELICULAS
 
-def read_all_peliculas() -> List[PeliculaconId]:
-    with open(PELICULAS_CSV) as f:
-        reader = csv.DictReader(f)
-        return [PeliculaconId(**row, id=int(row["id"]), anio=int(row["anio"]), activa=row["activa"] == "True") for row in reader if row["activa"] == "True"]
+def read_all_peliculas() -> list[PeliculaconId]:
+    with open("peliculas.csv", mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        peliculas = []
+        for row in reader:
+            if row["activa"] == "True":
+                pelicula = PeliculaconId(
+                    id=int(row["id"]),
+                    titulo=row["titulo"],
+                    anio=int(row["anio"]),
+                    estudio=row["estudio"],
+                    genero=row["genero"],
+                    activa=True
+                )
+                peliculas.append(pelicula)
+        return peliculas
+
 
 def read_one_pelicula(id: int) -> Optional[PeliculaconId]:
     with open(PELICULAS_CSV) as f:

@@ -1,1 +1,2 @@
-id, nombre, protagonista, pelicula, activo
+id,nombre,protagonista,pelicula,activo
+1,shrek,true,shrek,True

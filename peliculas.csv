@@ -1,1 +1,3 @@
-id, titulo, anio, estudio, genero, activa
+id,titulo,anio,estudio,genero,activa
+1,toystory,1995,Disney,animada,True2,string,string,1901,string,True
+2,string,string,1901,string,True

@@ -6,11 +6,12 @@ class Pelicula(BaseModel):
     anio: int = Field(..., gt=1900)
     estudio: str = Field(..., min_length=1)
     genero: str = Field(..., min_length=1)
+    activa: bool = True
 
 
 class PeliculaconId(Pelicula):
     id: int
-    activa: bool=True
+
 
 class PeliculaUpdate(BaseModel):
     titulo: Optional[str]=None
@@ -23,15 +24,17 @@ class Personaje(BaseModel):
     nombre: str = Field(...,min_length=1)
     protagonista: bool
     pelicula: str = Field(...,min_length=1)
+    activo: bool = True
 
 class PersonajeconId(Personaje):
     id: int
-    activo: bool=True
+
 
 class PersonajeUpdate(BaseModel):
     nombre: Optional[str]=None
     protagonista: Optional[bool]=None
     pelicula: Optional[str]=None
+
 
 
 
