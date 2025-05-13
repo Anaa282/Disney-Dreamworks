@@ -44,7 +44,7 @@ def update_pelicula(id: int, datos: PeliculaUpdate):
 @app.delete("/peliculas/{id}")
 def eliminar_pelicula(id: int):
     ops.delete_pelicula(id)
-    return {"mensaje": "Película eliminada (lógicamente)"}
+    return {"mensaje": "Película eliminada"}
 
 @app.get("/peliculas/buscar/estudio/{estudio}")
 def buscar_por_estudio(estudio: str):
@@ -82,7 +82,7 @@ def update_personaje(id: int, datos: PersonajeUpdate):
 @app.delete("/personajes/{id}")
 def eliminar_personaje(id: int):
     ops.delete_personaje(id)
-    return {"mensaje": "Personaje eliminado (lógicamente)"}
+    return {"mensaje": "Personaje eliminado"}
 
 @app.get("/personajes/buscar/pelicula/{pelicula}")
 def buscar_por_pelicula(pelicula: str):

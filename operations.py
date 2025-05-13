@@ -14,8 +14,8 @@ PJ_FIELDS = ["id", "nombre", "protagonista", "pelicula", "activo"]
 
 def get_next_id(filename: str) -> int:
     try:
-        with open(filename, mode="r") as f:
-            reader = csv.DictReader(f)
+        with open(filename, mode="r") as file:
+            reader = csv.DictReader(file)
             return max(int(row["id"]) for row in reader) + 1
     except (FileNotFoundError, ValueError):
         return 1
@@ -42,8 +42,8 @@ def read_all_peliculas() -> list[PeliculaconId]:
 
 
 def read_one_pelicula(id: int) -> Optional[PeliculaconId]:
-    with open(PELICULAS_CSV) as f:
-        reader = csv.DictReader(f)
+    with open(PELICULAS_CSV) as file:
+        reader = csv.DictReader(file)
         for row in reader:
             if int(row["id"]) == id and row["activa"].lower() == "true":
                 return PeliculaconId(
@@ -112,14 +112,15 @@ def read_all_personajes() -> list[PersonajeconId]:
     with open("personajes.csv", "r", newline="") as file:
         reader = csv.DictReader(file)
         for row in reader:
-            personaje = PersonajeconId(
-                id=int(row["id"]),
-                nombre=row["nombre"],
-                protagonista=row["protagonista"].lower() == "true",
-                pelicula=row["pelicula"],
-                activo=row["activo"].lower() == "true"
-            )
-            personajes.append(personaje)
+            if row["activo"].lower() == "true":
+                personaje = PersonajeconId(
+                    id=int(row["id"]),
+                    nombre=row["nombre"],
+                    protagonista=row["protagonista"].lower() == "true",
+                    pelicula=row["pelicula"],
+                    activo=True
+                )
+                personajes.append(personaje)
     return personajes
 
 
