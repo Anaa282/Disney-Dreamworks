@@ -1,40 +1,21 @@
-from pydantic import BaseModel, Field
-from typing import Optional
+from sqlalchemy import Column, Integer, String, Boolean
+from database import Base
 
-class Pelicula(BaseModel):
-    titulo: str = Field(..., min_length=1)
-    anio: int = Field(..., gt=1900)
-    estudio: str = Field(..., min_length=1)
-    genero: str = Field(..., min_length=1)
-    activa: bool = True
+class Pelicula(Base):
+    __tablename__ = "peliculas"
 
+    id = Column(Integer, primary_key=True, index=True)
+    titulo = Column(String, index=True)
+    genero = Column(String)
+    anio = Column(Integer)
+    estudio = Column(String)
+    activa = Column(Boolean, default=True)
 
-class PeliculaconId(Pelicula):
-    id: int
+class Personaje(Base):
+    __tablename__ = "personajes"
 
-
-class PeliculaUpdate(BaseModel):
-    titulo: Optional[str]=None
-    anio: Optional[int]=None
-    estudio: Optional[str]=None
-    genero: Optional[str]=None
-
-
-class Personaje(BaseModel):
-    nombre: str = Field(...,min_length=1)
-    protagonista: bool
-    pelicula: str = Field(...,min_length=1)
-    activo: bool = True
-
-class PersonajeconId(Personaje):
-    id: int
-
-
-class PersonajeUpdate(BaseModel):
-    nombre: Optional[str]=None
-    protagonista: Optional[bool]=None
-    pelicula: Optional[str]=None
-
-
-
-
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String, index=True)
+    protagonista = Column(Boolean)
+    pelicula = Column(String)
+    activo = Column(Boolean, default=True)

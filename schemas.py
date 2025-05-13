@@ -1,0 +1,35 @@
+from pydantic import BaseModel
+
+
+class PeliculaBase(BaseModel):
+    titulo: str
+    genero: str
+    anio: int
+    estudio: str
+    activa: bool = True
+
+class PeliculaCreate(PeliculaBase):
+    pass
+
+class PeliculaOut(PeliculaBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+
+class PersonajeBase(BaseModel):
+    nombre: str
+    protagonista: bool
+    pelicula: str
+    activo: bool = True
+
+class PersonajeCreate(PersonajeBase):
+    pass
+
+class PersonajeOut(PersonajeBase):
+    id: int
+
+    class Config:
+        orm_mode = True
