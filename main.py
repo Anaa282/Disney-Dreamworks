@@ -1,55 +1,80 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-from database import SessionLocal, engine, Base
-import models
-import operations
-from schemas import PeliculaCreate, PeliculaOut, PersonajeCreate, PersonajeOut
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import APIRouter, HTTPException
+from sqlalchemy.ext.asyncio import async_session
 
-# Crear tablas
-async def init_models():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+from models import *
+from database import async_session
+from sqlalchemy.future import select
+from typing import List
+from pydantic import BaseModel
+from schemas import *
 
-app = FastAPI()
-
-@app.on_event("startup")
-async def startup():
-    await init_models()
+router = APIRouter()
 
 
 
-async def get_db():
-    async with SessionLocal() as session:
-        yield session
+@router.post("/personajes/", response_model=PersonajeCreate)
+async def crear_personaje(data: PersonajeCreate):
+    async with async_session() as session:
+        nuevo = Personaje(**data.dict())
+        session.add(nuevo)
+        await session.commit()
+        await session.refresh(nuevo)
+        return nuevo
 
+# Leer todos los personajes activos
+@router.get("/personajes/", response_model=List[PersonajeCreate])
+async def leer_personajes():
+    async with async_session() as session:
+        result = await session.execute(select(Personaje).where(Personaje.activo == True))
+        return result.scalars().all()
 
+# Leer un personaje por ID
+@router.get("/personajes/{id}", response_model=PersonajeCreate)
+async def leer_personaje(id: int):
+    async with async_session() as session:
+        result = await session.execute(select(Personaje).where(Personaje.id == id))
+        personaje = result.scalar_one_or_none()
+        if personaje is None:
+            raise HTTPException(status_code=404, detail="Personaje no encontrado")
+        return personaje
 
-@app.post("/peliculas/", response_model=PeliculaOut)
-async def crear_pelicula(pelicula: PeliculaCreate, db: AsyncSession = Depends(get_db)):
-    return await operations.create_pelicula(db, pelicula)
+# Actualizar personaje
+@router.put("/personajes/{id}", response_model=PersonajeCreate)
+async def actualizar_personaje(id: int, datos: PersonajeUpdate):
+    async with async_session() as session:
+        result = await session.execute(select(Personaje).where(Personaje.id == id))
+        personaje = result.scalar_one_or_none()
+        if personaje is None:
+            raise HTTPException(status_code=404, detail="Personaje no encontrado")
+        for key, value in datos.dict(exclude_unset=True).items():
+            setattr(personaje, key, value)
+        await session.commit()
+        await session.refresh(personaje)
+        return personaje
 
-@app.get("/peliculas/", response_model=list[PeliculaOut])
-async def listar_peliculas(db: AsyncSession = Depends(get_db)):
-    return await operations.get_peliculas(db)
+# Eliminar personaje (marcar como inactivo)
+@router.delete("/personajes/{id}")
+async def eliminar_personaje(id: int):
+    async with async_session() as session:
+        result = await session.execute(select(Personaje).where(Personaje.id == id))
+        personaje = result.scalar_one_or_none()
+        if personaje is None:
+            raise HTTPException(status_code=404, detail="Personaje no encontrado")
+        personaje.activo = False
+        await session.commit()
+        return {"mensaje": "Personaje marcado como inactivo"}
 
-@app.get("/peliculas/{pelicula_id}", response_model=PeliculaOut)
-async def obtener_pelicula(pelicula_id: int, db: AsyncSession = Depends(get_db)):
-    return await operations.get_pelicula_by_id(db, pelicula_id)
+# Buscar personajes por película
+@router.get("/personajes/buscar_por_pelicula/{titulo}", response_model=List[PersonajeCreate])
+async def buscar_por_pelicula(titulo: str):
+    async with async_session() as session:
+        result = await session.execute(select(Personaje).where(Personaje.pelicula == titulo, Personaje.activo == True))
+        return result.scalars().all()
 
-@app.post("/personajes/", response_model=PersonajeOut)
-async def crear_personaje(personaje: PersonajeCreate, db: AsyncSession = Depends(get_db)):
-    return await operations.create_personaje(db, personaje)
+# Filtrar personajes que son protagonistas
+@router.get("/personajes/protagonistas", response_model=List[PersonajeCreate])
+async def filtrar_protagonistas():
+    async with async_session() as session:
+        result = await session.execute(select(Personaje).where(Personaje.protagonista == True, Personaje.activo == True))
+        return result.scalars().all()
 
-@app.get("/personajes/", response_model=list[PersonajeOut])
-async def listar_personajes(db: AsyncSession = Depends(get_db)):
-    return await operations.get_personajes(db)
-
-@app.get("/personajes/{personaje_id}", response_model=PersonajeOut)
-async def obtener_personaje(personaje_id: int, db: AsyncSession = Depends(get_db)):
-    return await operations.get_personaje_by_id(db, personaje_id)
-
-@app.get("/ping-db")
-async def ping_db(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(1))
-    return {"status": "Conexión exitosa"}

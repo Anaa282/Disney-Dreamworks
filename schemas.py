@@ -19,6 +19,8 @@ class PeliculaOut(PeliculaBase):
 
 
 
+
+
 class PersonajeBase(BaseModel):
     nombre: str
     protagonista: bool
@@ -30,6 +32,11 @@ class PersonajeCreate(PersonajeBase):
 
 class PersonajeOut(PersonajeBase):
     id: int
+class PersonajeUpdate(BaseModel):
+    nombre: str | None = None
+    protagonista: bool | None = None
+    pelicula: str | None = None
+    activo: bool | None = None
 
     class Config:
         orm_mode = True
