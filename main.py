@@ -78,4 +78,6 @@ async def filtrar_protagonistas():
     async with async_session() as session:
         result = await session.execute(select(Personaje).where(Personaje.protagonista == True, Personaje.activo == True))
         return result.scalars().all()
-
+@app.get("/")
+async def root():
+    return {"mensaje": "API de personajes activa. Visita /docs para la documentación"}
