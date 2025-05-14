@@ -11,7 +11,7 @@ async def init_models():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-app = FastAPI(title="API de Películas y Personajes")
+app = FastAPI()
 
 @app.on_event("startup")
 async def startup():
