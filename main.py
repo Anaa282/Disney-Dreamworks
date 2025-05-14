@@ -1,3 +1,4 @@
+import app
 from fastapi import APIRouter, HTTPException, FastAPI
 from sqlalchemy.ext.asyncio import async_session
 
@@ -10,6 +11,7 @@ from schemas import *
 
 router = APIRouter()
 
+app.include_router(router)
 app = FastAPI()
 
 @router.post("/personajes/", response_model=PersonajeCreate)
