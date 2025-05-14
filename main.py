@@ -13,7 +13,74 @@ app = FastAPI()
 router = APIRouter()
 app.include_router(router)
 
-@router.post("/personajes/", response_model=PersonajeCreate)
+# Crear película
+@app.post("/peliculas/", response_model=PeliculaResponse)
+async def crear_pelicula(data: PeliculaCreate):
+    async with async_session() as session:
+        nueva = Pelicula(**data.dict())
+        session.add(nueva)
+        await session.commit()
+        await session.refresh(nueva)
+        return nueva
+
+# Leer todas las películas activas
+@app.get("/peliculas/", response_model=List[PeliculaResponse])
+async def leer_peliculas():
+    async with async_session() as session:
+        result = await session.execute(select(Pelicula).where(Pelicula.activa == True))
+        return result.scalars().all()
+
+# Leer película por ID
+@app.get("/peliculas/{id}", response_model=PeliculaResponse)
+async def leer_pelicula(id: int):
+    async with async_session() as session:
+        result = await session.execute(select(Pelicula).where(Pelicula.id == id))
+        pelicula = result.scalar_one_or_none()
+        if pelicula is None:
+            raise HTTPException(status_code=404, detail="Película no encontrada")
+        return pelicula
+
+# Actualizar película
+@app.put("/peliculas/{id}", response_model=PeliculaResponse)
+async def actualizar_pelicula(id: int, datos: PeliculaUpdate):
+    async with async_session() as session:
+        result = await session.execute(select(Pelicula).where(Pelicula.id == id))
+        pelicula = result.scalar_one_or_none()
+        if pelicula is None:
+            raise HTTPException(status_code=404, detail="Película no encontrada")
+        for key, value in datos.dict(exclude_unset=True).items():
+            setattr(pelicula, key, value)
+        await session.commit()
+        await session.refresh(pelicula)
+        return pelicula
+
+
+@app.delete("/peliculas/{id}")
+async def eliminar_pelicula(id: int):
+    async with async_session() as session:
+        result = await session.execute(select(Pelicula).where(Pelicula.id == id))
+        pelicula = result.scalar_one_or_none()
+        if pelicula is None:
+            raise HTTPException(status_code=404, detail="Película no encontrada")
+        pelicula.activa = False
+        await session.commit()
+        return {"mensaje": "Película marcada como inactiva"}
+
+
+@app.get("/peliculas/buscar_por_estudio/{estudio}", response_model=List[PeliculaResponse])
+async def buscar_por_estudio(estudio: str):
+    async with async_session() as session:
+        result = await session.execute(select(Pelicula).where(Pelicula.estudio == estudio, Pelicula.activa == True))
+        return result.scalars().all()
+
+@app.get("/peliculas/filtrar_por_genero/{genero}", response_model=List[PeliculaResponse])
+async def filtrar_por_genero(genero: str):
+    async with async_session() as session:
+        result = await session.execute(select(Pelicula).where(Pelicula.genero == genero, Pelicula.activa == True))
+        return result.scalars().all()
+
+
+@app.post("/personajes/", response_model=PersonajeCreate)
 async def crear_personaje(data: PersonajeCreate):
     async with async_session() as session:
         nuevo = Personaje(**data.dict())
@@ -22,15 +89,15 @@ async def crear_personaje(data: PersonajeCreate):
         await session.refresh(nuevo)
         return nuevo
 
-# Leer todos los personajes activos
-@router.get("/personajes/", response_model=List[PersonajeCreate])
+
+@app.get("/personajes/", response_model=List[PersonajeCreate])
 async def leer_personajes():
     async with async_session() as session:
         result = await session.execute(select(Personaje).where(Personaje.activo == True))
         return result.scalars().all()
 
-# Leer un personaje por ID
-@router.get("/personajes/{id}", response_model=PersonajeCreate)
+
+@app.get("/personajes/{id}", response_model=PersonajeCreate)
 async def leer_personaje(id: int):
     async with async_session() as session:
         result = await session.execute(select(Personaje).where(Personaje.id == id))
@@ -39,8 +106,8 @@ async def leer_personaje(id: int):
             raise HTTPException(status_code=404, detail="Personaje no encontrado")
         return personaje
 
-# Actualizar personaje
-@router.put("/personajes/{id}", response_model=PersonajeCreate)
+
+@app.put("/personajes/{id}", response_model=PersonajeCreate)
 async def actualizar_personaje(id: int, datos: PersonajeUpdate):
     async with async_session() as session:
         result = await session.execute(select(Personaje).where(Personaje.id == id))
@@ -53,8 +120,8 @@ async def actualizar_personaje(id: int, datos: PersonajeUpdate):
         await session.refresh(personaje)
         return personaje
 
-# Eliminar personaje (marcar como inactivo)
-@router.delete("/personajes/{id}")
+
+@app.delete("/personajes/{id}")
 async def eliminar_personaje(id: int):
     async with async_session() as session:
         result = await session.execute(select(Personaje).where(Personaje.id == id))
@@ -65,15 +132,15 @@ async def eliminar_personaje(id: int):
         await session.commit()
         return {"mensaje": "Personaje marcado como inactivo"}
 
-# Buscar personajes por película
-@router.get("/personajes/buscar_por_pelicula/{titulo}", response_model=List[PersonajeCreate])
+
+@app.get("/personajes/buscar_por_pelicula/{titulo}", response_model=List[PersonajeCreate])
 async def buscar_por_pelicula(titulo: str):
     async with async_session() as session:
         result = await session.execute(select(Personaje).where(Personaje.pelicula == titulo, Personaje.activo == True))
         return result.scalars().all()
 
-# Filtrar personajes que son protagonistas
-@router.get("/personajes/protagonistas", response_model=List[PersonajeCreate])
+
+@app.get("/personajes/protagonistas", response_model=List[PersonajeCreate])
 async def filtrar_protagonistas():
     async with async_session() as session:
         result = await session.execute(select(Personaje).where(Personaje.protagonista == True, Personaje.activo == True))

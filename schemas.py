@@ -1,24 +1,26 @@
 from pydantic import BaseModel
 
-
 class PeliculaBase(BaseModel):
     titulo: str
     genero: str
     anio: int
     estudio: str
-    activa: bool = True
 
 class PeliculaCreate(PeliculaBase):
-    activo: bool = True
     pass
 
-class PeliculaOut(PeliculaBase):
+class PeliculaUpdate(BaseModel):
+    titulo: str | None = None
+    genero: str | None = None
+    anio: int | None = None
+    estudio: str | None = None
+
+class PeliculaResponse(PeliculaBase):
     id: int
+    activa: bool
 
     class Config:
         orm_mode = True
-
-
 
 
 
