@@ -9,11 +9,12 @@ from typing import List
 from pydantic import BaseModel
 from schemas import *
 
-router = APIRouter()
 
 
 app = FastAPI()
+router = APIRouter()
 app.include_router(router)
+
 @router.post("/personajes/", response_model=PersonajeCreate)
 async def crear_personaje(data: PersonajeCreate):
     async with async_session() as session:
