@@ -9,6 +9,7 @@ class PeliculaBase(BaseModel):
     activa: bool = True
 
 class PeliculaCreate(PeliculaBase):
+    activo: bool = True
     pass
 
 class PeliculaOut(PeliculaBase):
@@ -28,6 +29,7 @@ class PersonajeBase(BaseModel):
     activo: bool = True
 
 class PersonajeCreate(PersonajeBase):
+    activo: bool = True
     pass
 
 class PersonajeOut(PersonajeBase):

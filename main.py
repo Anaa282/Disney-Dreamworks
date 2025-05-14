@@ -1,7 +1,5 @@
 
 from fastapi import APIRouter, HTTPException, FastAPI
-from sqlalchemy.ext.asyncio import async_session
-
 from models import *
 from database import async_session
 from sqlalchemy.future import select
