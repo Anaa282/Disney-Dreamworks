@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, HTTPException, FastAPI
+from fastapi import HTTPException, FastAPI, Request
 from models import *
 from database import async_session
 from sqlalchemy.future import select
@@ -7,12 +7,19 @@ from typing import List
 from pydantic import BaseModel
 from schemas import *
 from sqlalchemy import func, select
-from operations import *
+from fastapi.responses import JSONResponse
 
 
 app = FastAPI()
-router = APIRouter()
-app.include_router(router)
+
+
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": str(exc)},
+    )
 
 # Crear película
 @app.post("/peliculas/", response_model=PeliculaResponse)
