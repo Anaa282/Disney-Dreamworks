@@ -3,7 +3,6 @@ from sqlalchemy.future import select
 from fastapi import HTTPException
 from models import *
 from schemas import PeliculaCreate, PersonajeCreate
-from sqlalchemy.orm import Session
 
 
 #PELICULAS
@@ -72,20 +71,22 @@ async def filtrar_peliculas_por_genero(genero: str):
 
 
 async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
-    pelicula = db.query(Pelicula).filter(Pelicula.nombre == personaje.pelicula).first()
-    if not pelicula:
-        raise ValueError("Película no encontrada")  # O manejarlo según tu necesidad
+    result = await db.execute(select(Pelicula).where(Pelicula.titulo == personaje.pelicula_titulo))
+    pelicula_obj = result.scalar_one_or_none()
 
-    # Crear el personaje con el ID de la película obtenida
-    nuevo_personaje = Personaje(
+    if not pelicula_obj:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+
+    nuevo = Personaje(
         nombre=personaje.nombre,
         protagonista=personaje.protagonista,
-        pelicula_id=pelicula.id  # Vinculación con el ID correcto
+        pelicula_id=pelicula_obj.id,
+        activo=personaje.activo
     )
-    db.add(nuevo_personaje)
-    db.commit()
-    db.refresh(nuevo_personaje)
-    return nuevo_personaje
+    db.add(nuevo)
+    await db.commit()
+    await db.refresh(nuevo)
+    return nuevo
 
 async def get_personajes(db: AsyncSession):
     result = await db.execute(select(Personaje))
@@ -103,7 +104,7 @@ async def modificar_personaje(id: int, nueva_data: dict):
         query = await session.execute(select(Personaje).where(Personaje.id == id))
         personaje = query.scalar_one_or_none()
         if not personaje:
-            return None  # No encontrado
+            return None
 
         for campo, valor in nueva_data.items():
             setattr(personaje, campo, valor)
@@ -119,6 +120,6 @@ async def eliminar_personaje(id: int):
         if not personaje:
             return None
 
-        personaje.activo = False  # Eliminación lógica (trazable)
+        personaje.activo = False
         await session.commit()
         return personaje
