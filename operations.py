@@ -3,6 +3,7 @@ from sqlalchemy.future import select
 from fastapi import HTTPException
 from models import *
 from schemas import PeliculaCreate, PersonajeCreate
+from sqlalchemy.orm import Session
 
 
 #PELICULAS
@@ -71,22 +72,20 @@ async def filtrar_peliculas_por_genero(genero: str):
 
 
 async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
-    result = await db.execute(select(Pelicula).where(Pelicula.titulo == personaje.pelicula_titulo))
-    pelicula_obj = result.scalar_one_or_none()
+    pelicula = db.query(Pelicula).filter(Pelicula.nombre == personaje.pelicula).first()
+    if not pelicula:
+        raise ValueError("Película no encontrada")  # O manejarlo según tu necesidad
 
-    if not pelicula_obj:
-        raise HTTPException(status_code=404, detail="Película no encontrada")
-
-    nuevo = Personaje(
+    # Crear el personaje con el ID de la película obtenida
+    nuevo_personaje = Personaje(
         nombre=personaje.nombre,
         protagonista=personaje.protagonista,
-        pelicula_id=pelicula_obj.id,
-        activo=personaje.activo
+        pelicula_id=pelicula.id  # Vinculación con el ID correcto
     )
-    db.add(nuevo)
-    await db.commit()
-    await db.refresh(nuevo)
-    return nuevo
+    db.add(nuevo_personaje)
+    db.commit()
+    db.refresh(nuevo_personaje)
+    return nuevo_personaje
 
 async def get_personajes(db: AsyncSession):
     result = await db.execute(select(Personaje))
