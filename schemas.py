@@ -38,6 +38,7 @@ class PersonajeCreate(PersonajeBase):
 
 class PersonajeOut(PersonajeBase):
     id: int
+    pelicula: str
 
 
 class PersonajeUpdate(BaseModel):
