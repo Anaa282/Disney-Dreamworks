@@ -1,6 +1,6 @@
 
 from fastapi import HTTPException, FastAPI, Request
-from models import *
+from models import Personaje, Pelicula
 from database import async_session
 from sqlalchemy.future import select
 from typing import List
