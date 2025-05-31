@@ -29,7 +29,7 @@ class PeliculaResponse(PeliculaBase):
 class PersonajeBase(BaseModel):
     nombre: str
     protagonista: bool
-    pelicula = int
+    pelicula = str
     activo: bool = True
 
 class PersonajeCreate(PersonajeBase):
@@ -38,12 +38,12 @@ class PersonajeCreate(PersonajeBase):
 
 class PersonajeOut(PersonajeBase):
     id: int
-    pelicula: int
+
 
 class PersonajeUpdate(BaseModel):
     nombre: str | None = None
     protagonista: bool | None = None
-    pelicula: int | None = None
+    pelicula: str | None = None
     activo: bool | None = None
 
     class Config:
