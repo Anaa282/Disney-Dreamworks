@@ -77,11 +77,10 @@ async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
     if not pelicula_obj:
         raise HTTPException(status_code=404, detail="Película no encontrada")
 
-    # Crear personaje usando el id de la película
     nuevo = Personaje(
         nombre=personaje.nombre,
         protagonista=personaje.protagonista,
-        pelicula=pelicula_obj.id,  # Aquí el id que encontró
+        pelicula_id=pelicula_obj.id,
         activo=personaje.activo
     )
     db.add(nuevo)
