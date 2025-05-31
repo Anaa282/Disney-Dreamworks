@@ -71,7 +71,19 @@ async def filtrar_peliculas_por_genero(genero: str):
 
 
 async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
-    nuevo = Personaje(**personaje.dict())
+    result = await db.execute(select(Pelicula).where(Pelicula.titulo == personaje.pelicula_titulo))
+    pelicula_obj = result.scalar_one_or_none()
+
+    if not pelicula_obj:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+
+    # Crear personaje usando el id de la película
+    nuevo = Personaje(
+        nombre=personaje.nombre,
+        protagonista=personaje.protagonista,
+        pelicula=pelicula_obj.id,  # Aquí el id que encontró
+        activo=personaje.activo
+    )
     db.add(nuevo)
     await db.commit()
     await db.refresh(nuevo)

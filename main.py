@@ -7,7 +7,7 @@ from typing import List
 from pydantic import BaseModel
 from schemas import *
 from sqlalchemy import func, select
-
+from operations import *
 
 
 app = FastAPI()
@@ -84,10 +84,7 @@ async def filtrar_por_genero(genero: str):
 @app.post("/personajes/", response_model=PersonajeCreate)
 async def crear_personaje(data: PersonajeCreate):
     async with async_session() as session:
-        nuevo = Personaje(**data.dict())
-        session.add(nuevo)
-        await session.commit()
-        await session.refresh(nuevo)
+        nuevo = await create_personaje(session, data)
         return nuevo
 
 
