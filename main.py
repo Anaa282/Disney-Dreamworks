@@ -146,7 +146,7 @@ async def buscar_por_pelicula(titulo: str):
                 raise HTTPException(status_code=404, detail="Película no encontrada o inactiva")
 
             result = await session.execute(
-                select(Personaje).where(Personaje.pelicula == pelicula, Personaje.activo == True)
+                select(Personaje).where(Personaje.pelicula == str(pelicula.id), Personaje.activo == True)
             )
             return result.scalars().all()
     except Exception as e:
