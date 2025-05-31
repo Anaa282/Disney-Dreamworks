@@ -6,6 +6,7 @@ from sqlalchemy.future import select
 from typing import List
 from pydantic import BaseModel
 from schemas import *
+from sqlalchemy import func
 
 
 
@@ -136,7 +137,7 @@ async def eliminar_personaje(id: int):
 @app.get("/personajes/buscar_por_pelicula/{titulo}", response_model=List[PersonajeCreate])
 async def buscar_por_pelicula(titulo: str):
     async with async_session() as session:
-        result = await session.execute(select(Personaje).where(Personaje.pelicula == titulo.lower(), Personaje.activo == True))
+        result = await session.execute(func.lower(select(Personaje).where(Personaje.pelicula == titulo, Personaje.activo == True)))
         return result.scalars().all()
 
 
