@@ -136,21 +136,26 @@ async def eliminar_personaje(id: int):
 
 @app.get("/personajes/buscar_por_pelicula/{titulo}", response_model=List[PersonajeCreate])
 async def buscar_por_pelicula(titulo: str):
-    try:
-        async with async_session() as session:
-            result = await session.execute(
-                select(Pelicula).where(func.lower(Pelicula.titulo) == titulo.lower(), Pelicula.activa == True)
-            )
-            pelicula = result.scalar_one_or_none()
-            if pelicula is None:
-                raise HTTPException(status_code=404, detail="Película no encontrada o inactiva")
+    async with async_session() as session:
+        # Buscar la película por título (ignorando mayúsculas/minúsculas)
+        result = await session.execute(
+            select(Pelicula).where(func.lower(Pelicula.titulo) == titulo.lower(), Pelicula.activa == True)
+        )
+        pelicula = result.scalar_one_or_none()
 
-            result = await session.execute(
-                select(Personaje).where(Personaje.pelicula == str(pelicula.id), Personaje.activo == True)
-            )
-            return result.scalars().all()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error interno: {e}")
+        if pelicula is None:
+            raise HTTPException(status_code=404, detail="Película no encontrada o inactiva")
+
+        print(f"🎬 Película encontrada: {pelicula.titulo}, ID: {pelicula.id}")
+
+        # Buscar personajes relacionados con esa película
+        result = await session.execute(
+            select(Personaje).where(Personaje.pelicula == str(pelicula.id), Personaje.activo == True)
+        )
+        personajes = result.scalars().all()
+
+        print(f"👥 Personajes encontrados: {len(personajes)}")
+        return personajes
 
 
 
