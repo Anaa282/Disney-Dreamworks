@@ -98,7 +98,7 @@ async def crear_personaje(data: PersonajeCreate):
         return nuevo
 
 
-@app.get("/personajes/", response_model=List[PersonajeCreate])
+@app.get("/personajes/", response_model=List[PersonajeResponse])
 async def leer_personajes():
     async with async_session() as session:
         result = await session.execute(select(Personaje).options(selectinload(Personaje.pelicula)))

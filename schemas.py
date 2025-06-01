@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Optional
 
 
 class PeliculaBase(BaseModel):
@@ -51,6 +51,12 @@ class PersonajeUpdate(BaseModel):
     protagonista: bool | None = None
     pelicula: str | None = None
     activo: bool | None = None
+
+class PersonajeResponse(BaseModel):
+    id: int
+    nombre: str
+    protagonista: bool
+    pelicula: Optional[PeliculaBase] = None
 
     class Config:
         orm_mode = True
