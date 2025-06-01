@@ -21,6 +21,10 @@ class PeliculaResponse(PeliculaBase):
     id: int
     activa: bool
 
+class PeliculaNested(BaseModel):
+    titulo: str
+
+
     class Config:
         orm_mode = True
 
@@ -33,7 +37,7 @@ class PersonajeBase(BaseModel):
 
 class PersonajeCreate(PersonajeBase):
     activo: bool = True
-    nom_pelicula: str
+    pelicula: PeliculaNested
     pass
 
 class PersonajeOut(PersonajeBase):
