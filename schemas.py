@@ -56,7 +56,7 @@ class PersonajeResponse(BaseModel):
     id: int
     nombre: str
     protagonista: bool
-    pelicula: Optional[PeliculaBase] = None
+    pelicula: Optional[str] = None
 
     class Config:
         orm_mode = True

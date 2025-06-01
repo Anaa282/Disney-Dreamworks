@@ -103,7 +103,18 @@ async def leer_personajes():
     async with async_session() as session:
         result = await session.execute(select(Personaje).options(selectinload(Personaje.pelicula)))
         personajes = result.scalars().all()
-        return personajes
+
+        personajes_con_nombre = [
+            PersonajeResponse(
+                id=p.id,
+                nombre=p.nombre,
+                protagonista=p.protagonista,
+                pelicula=p.pelicula.titulo if p.pelicula else None
+            )
+            for p in personajes
+        ]
+        return personajes_con_nombre
+
 
 
 @app.get("/personajes/{id}", response_model=PersonajeCreate)
