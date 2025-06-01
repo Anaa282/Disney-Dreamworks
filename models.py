@@ -20,7 +20,7 @@ class Personaje(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String, index=True)
     protagonista = Column(Boolean)
-    pelicula_id = Column(Integer, ForeignKey("peliculas.id"))
+    pelicula = Column(Integer, ForeignKey("peliculas.id"))
     activo = Column(Boolean, default=True)
 
     pelicula = relationship("Pelicula", back_populates="personajes")
