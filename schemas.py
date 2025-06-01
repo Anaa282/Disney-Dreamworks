@@ -33,11 +33,12 @@ class PersonajeBase(BaseModel):
 
 class PersonajeCreate(PersonajeBase):
     activo: bool = True
-    pelicula: str
+    nom_pelicula: str
     pass
 
 class PersonajeOut(PersonajeBase):
     id: int
+    pelicula_id: int
 
 
 

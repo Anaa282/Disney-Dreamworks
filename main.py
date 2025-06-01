@@ -88,7 +88,7 @@ async def filtrar_por_genero(genero: str):
         return result.scalars().all()
 
 
-@app.post("/personajes/", response_model=PersonajeCreate)
+@app.post("/personajes/", response_model=PersonajeOut)
 async def crear_personaje(data: PersonajeCreate):
     async with async_session() as session:
         nuevo = await create_personaje(session, data)
