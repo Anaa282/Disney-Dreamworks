@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+
 
 
 class PeliculaBase(BaseModel):
@@ -29,7 +29,7 @@ class PeliculaResponse(PeliculaBase):
 class PersonajeBase(BaseModel):
     nombre: str
     protagonista: bool
-    pelicula = int
+    pelicula : int
     activo: bool = True
 
 class PersonajeCreate(PersonajeBase):
