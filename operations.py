@@ -80,7 +80,7 @@ async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
     nuevo = Personaje(
         nombre=personaje.nombre,
         protagonista=personaje.protagonista,
-        pelicula_id=pelicula_obj.id,
+        pelicula=pelicula_obj.id,
         activo=personaje.activo
     )
     db.add(nuevo)
