@@ -99,7 +99,7 @@ async def crear_personaje(data: PersonajeCreate):
 
 
 @app.get("/personajes/", response_model=List[PersonajeCreate])
-async def leer_personajes(db: AsyncSession = Depends(get_async_session)):
+async def leer_personajes():
     async with async_session() as session:
         result = await db.execute(select(Personaje).options(selectinload(Personaje.pelicula)))
         personajes = result.scalars().all()
