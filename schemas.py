@@ -29,12 +29,11 @@ class PeliculaResponse(PeliculaBase):
 class PersonajeBase(BaseModel):
     nombre: str
     protagonista: bool
-    pelicula : int
     activo: bool = True
 
 class PersonajeCreate(PersonajeBase):
     activo: bool = True
-    nom_pelicula: str
+    pelicula: str
     pass
 
 class PersonajeOut(PersonajeBase):
