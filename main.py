@@ -1,10 +1,10 @@
 
-from fastapi import HTTPException, FastAPI, Request
+from fastapi import HTTPException, FastAPI, Request, Depends
 from sqlalchemy.orm import selectinload
 from sqlalchemy.testing import db
 
 from models import Personaje, Pelicula
-from database import async_session
+from database import async_session, get_async_session
 from sqlalchemy.future import select
 from typing import List
 from pydantic import BaseModel
@@ -99,10 +99,11 @@ async def crear_personaje(data: PersonajeCreate):
 
 
 @app.get("/personajes/", response_model=List[PersonajeCreate])
-async def leer_personajes():
+async def leer_personajes(db: AsyncSession = Depends(get_async_session)):
     async with async_session() as session:
         result = await db.execute(select(Personaje).options(selectinload(Personaje.pelicula)))
-        return result.scalars().all()
+        personajes = result.scalars().all()
+        return personajes
 
 
 @app.get("/personajes/{id}", response_model=PersonajeCreate)
