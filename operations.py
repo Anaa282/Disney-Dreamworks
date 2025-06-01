@@ -88,6 +88,11 @@ async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
     await db.refresh(nuevo)
     return nuevo
 
+async def crear_personaje_handler(personaje: PersonajeCreate):
+    async with async_session() as db:
+        async with db.begin():
+            return await create_personaje(db, personaje)
+
 async def get_personajes(db: AsyncSession):
     result = await db.execute(select(Personaje))
     return result.scalars().all()
