@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - CineApp{% endblock %}
+
+{% block content %}
+  <h1 class="title">Bienvenido a CineApp</h1>
+  <p class="subtitle">Conoce películas y personajes de DreamWorks y Disney.</p>
+
+  <div class="buttons">
+    <a class="button is-primary" href="/peliculas">
+      <span class="icon"><i class="fas fa-video"></i></span>
+      <span>Ver Películas</span>
+    </a>
+    <a class="button is-link" href="/personajes">
+      <span class="icon"><i class="fas fa-user"></i></span>
+      <span>Ver Personajes</span>
+    </a>
+  </div>
+{% endblock %}

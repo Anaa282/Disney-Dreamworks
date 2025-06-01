@@ -2,6 +2,7 @@
 from fastapi import HTTPException, FastAPI, Request, Depends
 from sqlalchemy.orm import selectinload
 from sqlalchemy.testing import db
+from starlette.templating import Jinja2Templates
 
 from models import Personaje, Pelicula
 from database import async_session, get_async_session
@@ -15,7 +16,7 @@ from operations import *
 
 app = FastAPI()
 
-
+templates = Jinja2Templates(directory="templates")
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
