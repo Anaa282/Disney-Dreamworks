@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from schemas import *
 from sqlalchemy import func, select
 from fastapi.responses import JSONResponse
-
+from operations import *
 
 app = FastAPI()
 
