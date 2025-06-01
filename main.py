@@ -2,6 +2,7 @@
 from fastapi import HTTPException, FastAPI, Request, Depends
 from sqlalchemy.orm import selectinload
 from sqlalchemy.testing import db
+from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 
 from models import Personaje, Pelicula
@@ -17,6 +18,11 @@ from operations import *
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request})
+
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
