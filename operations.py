@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_session
 from sqlalchemy.future import select
 from fastapi import HTTPException
 from models import *
-from schemas import PeliculaCreate, PersonajeCreate
+from schemas import PeliculaCreate, PersonajeCreate, PersonajeResponse
 from database import async_session
 from sqlalchemy.orm import joinedload
 
@@ -71,13 +71,16 @@ async def filtrar_peliculas_por_genero(genero: str):
 # PERSONAJES
 
 async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
+
     result = await db.execute(
         select(Pelicula).where(Pelicula.titulo == personaje.pelicula.titulo)
     )
     pelicula_obj = result.scalar_one_or_none()
 
+
     if not pelicula_obj:
         raise HTTPException(status_code=404, detail="Película no encontrada")
+
 
     nuevo = Personaje(
         nombre=personaje.nombre,
@@ -89,15 +92,23 @@ async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
 
     db.add(nuevo)
     await db.commit()
-
     await db.refresh(nuevo)
 
-    result = await db.execute(
-        select(Personaje).options(joinedload(Personaje.pelicula)).where(Personaje.id == nuevo.id)
-    )
-    personaje = result.scalar_one()
 
-    return personaje
+    result = await db.execute(
+        select(Personaje)
+        .options(joinedload(Personaje.pelicula))
+        .where(Personaje.id == nuevo.id)
+    )
+    personaje_con_pelicula = result.scalar_one()
+
+
+    return PersonajeResponse(
+        id=personaje_con_pelicula.id,
+        nombre=personaje_con_pelicula.nombre,
+        protagonista=personaje_con_pelicula.protagonista,
+        pelicula=personaje_con_pelicula.pelicula.titulo  # Solo el string
+    )
 
 
 
