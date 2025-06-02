@@ -7,6 +7,7 @@ class PeliculaBase(BaseModel):
     genero: str
     anio: int
     estudio: str
+    img_url: str
 
 class PeliculaCreate(PeliculaBase):
     pass
@@ -34,6 +35,7 @@ class PersonajeBase(BaseModel):
     nombre: str
     protagonista: bool
     activo: bool = True
+    img_url: str
 
 class PersonajeCreate(PersonajeBase):
     activo: bool = True

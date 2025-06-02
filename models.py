@@ -11,6 +11,7 @@ class Pelicula(Base):
     anio = Column(Integer)
     estudio = Column(String)
     activa = Column(Boolean, default=True)
+    img_url = Column(String)
 
     personajes = relationship("Personaje", back_populates="pelicula")
 
@@ -22,5 +23,6 @@ class Personaje(Base):
     protagonista = Column(Boolean)
     pelicula_id = Column(Integer, ForeignKey("peliculas.id"))
     activo = Column(Boolean, default=True)
+    img_url = Column(String)
 
     pelicula = relationship("Pelicula", back_populates="personajes")
