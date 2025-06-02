@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from models import *
 from schemas import PeliculaCreate, PersonajeCreate
 from database import async_session
+from sqlalchemy.orm import joinedload
 
 #PELICULAS
 
@@ -71,25 +72,33 @@ async def filtrar_peliculas_por_genero(genero: str):
 
 async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
     result = await db.execute(
-        select(Pelicula).where(Pelicula.titulo == personaje.pelicula.titulo)
+        select(Pelicula).where(Pelicula.titulo == personaje.nom_pelicula)
     )
     pelicula_obj = result.scalar_one_or_none()
 
     if not pelicula_obj:
         raise HTTPException(status_code=404, detail="Película no encontrada")
 
-
     nuevo = Personaje(
         nombre=personaje.nombre,
         protagonista=personaje.protagonista,
         pelicula_id=pelicula_obj.id,
-        activo=personaje.activo
+        activo=personaje.activo,
+        img_url=personaje.img_url
     )
 
     db.add(nuevo)
     await db.commit()
+
     await db.refresh(nuevo)
-    return nuevo
+
+    result = await db.execute(
+        select(Personaje).options(joinedload(Personaje.pelicula)).where(Personaje.id == nuevo.id)
+    )
+    personaje = result.scalar_one()
+
+    return personaje
+
 
 
 
