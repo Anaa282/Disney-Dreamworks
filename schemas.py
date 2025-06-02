@@ -7,7 +7,7 @@ class PeliculaBase(BaseModel):
     genero: str
     anio: int
     estudio: str
-    img_url: str
+    img_url:Optional[str] = None
 
 class PeliculaCreate(PeliculaBase):
     pass
