@@ -71,7 +71,7 @@ async def filtrar_peliculas_por_genero(genero: str):
 
 async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
     result = await db.execute(
-        select(Pelicula).where(Pelicula.titulo == personaje.nom_pelicula)
+        select(Pelicula).where(Pelicula.titulo == personaje.pelicula)
     )
     pelicula_obj = result.scalar_one_or_none()
 
