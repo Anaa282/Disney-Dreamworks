@@ -17,7 +17,7 @@ async def create_pelicula(db: AsyncSession, pelicula: PeliculaCreate):
     return nueva
 
 async def get_peliculas(db: AsyncSession):
-    result = await db.execute(select(Pelicula))
+    result = await db.execute(select(Pelicula).where(Pelicula.activa==True))
     return result.scalars().all()
 
 async def get_pelicula_by_id(db: AsyncSession, pelicula_id: int):
@@ -114,7 +114,7 @@ async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
 
 
 async def get_personajes(db: AsyncSession):
-    result = await db.execute(select(Personaje))
+    result = await db.execute(select(Personaje).where(Personaje.activo == True))
     return result.scalars().all()
 
 async def get_personaje_by_id(db: AsyncSession, personaje_id: int):
