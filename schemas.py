@@ -35,7 +35,7 @@ class PersonajeBase(BaseModel):
     nombre: str
     protagonista: bool
     activo: bool = True
-    img_url: str
+    img_url:Optional[str] = None
 
 class PersonajeCreate(PersonajeBase):
     activo: bool = True
