@@ -67,17 +67,18 @@ async def crear_pelicula(
     anio: int = Form(...),
     estudio: str = Form(...),
     img_url: str = Form(""),
-    activa: str = Form(None)
-):
-    activa_bool = activa == "true"
     session: AsyncSession = Depends(get_async_session)
+
+):
+
+
     nueva_pelicula = Pelicula(
         titulo=titulo,
         genero=genero,
         anio=anio,
         estudio=estudio,
         img_url=img_url,
-        activa=activa_bool,
+
     )
     session.add(nueva_pelicula)
     await session.commit()
