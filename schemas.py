@@ -27,7 +27,7 @@ class PeliculaNested(BaseModel):
 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 
@@ -61,4 +61,4 @@ class PersonajeResponse(BaseModel):
     pelicula: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
