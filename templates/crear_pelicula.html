@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Crear nueva película</h1>
+<form action="/create-pelicula" method="post">
+    <label for="titulo">Título:</label><br />
+    <input type="text" id="titulo" name="titulo" required /><br /><br />
+
+    <label for="genero">Género:</label><br />
+    <input type="text" id="genero" name="genero" required /><br /><br />
+
+    <label for="anio">Año:</label><br />
+    <input type="number" id="anio" name="anio" required /><br /><br />
+
+    <label for="estudio">Estudio:</label><br />
+    <input type="text" id="estudio" name="estudio" required /><br /><br />
+
+    <label for="url_imagen">URL imagen:</label><br />
+    <input type="url" id="url_imagen" name="url_imagen" /><br /><br />
+
+    <button type="submit">Crear Película</button>
+</form>
+{% endblock %}
