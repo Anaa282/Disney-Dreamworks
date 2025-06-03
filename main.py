@@ -55,11 +55,11 @@ async def ver_peliculas(request: Request, session: AsyncSession = Depends(get_as
     return templates.TemplateResponse("peliculas.html", {"request": request,"peliculas": peliculas})
 
 
-@app.get("/crear-pelicula")
+@app.get("/peliculas/crear", response_model=List[PeliculaResponse])
 async def mostrar_formulario(request: Request):
     return templates.TemplateResponse("create_pelicula.html", {"request": request})
 
-@app.post("/pelicula/crear")
+@app.post("/peliculas/crear")
 async def crear_pelicula(
     request: Request,
     titulo: str = Form(...),
