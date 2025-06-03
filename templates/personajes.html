@@ -7,7 +7,11 @@
 <div class="grid">
     {% for personaje in personajes %}
     <div class="card">
-        <img src="{{ personaje.img_url }}" alt="{{ personaje.nombre }}">
+        {% if personaje.img_url %}
+            <img src="{{ personaje.img_url }}" alt="{{ personaje.nombre }}">
+        {% else %}
+            <img src="/static/default-img.png" alt="Imagen no disponible">
+{% endif %}
         <div class="titulo">{{ personaje.nombre }}</div>
         <div class="detalle">Película: {{ personaje.pelicula.titulo }}</div>
         <div class="detalle">Protagonista: {{ 'Sí' if personaje.protagonista else 'No' }}</div>

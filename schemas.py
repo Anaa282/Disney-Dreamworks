@@ -53,6 +53,7 @@ class PersonajeUpdate(BaseModel):
     protagonista: bool | None = None
     pelicula: str | None = None
     activo: bool | None = None
+    img_url:Optional[str] = None
 
 class PersonajeResponse(BaseModel):
     id: int
