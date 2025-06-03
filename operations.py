@@ -4,7 +4,8 @@ from fastapi import HTTPException
 from models import *
 from schemas import PeliculaCreate, PersonajeCreate, PersonajeResponse
 from database import async_session
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
+
 
 #PELICULAS
 
@@ -114,7 +115,7 @@ async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
 
 
 async def get_personajes(db: AsyncSession):
-    result = await db.execute(select(Personaje).where(Personaje.activo == True))
+    result = await db.execute(select(Personaje).options(selectinload(Personaje.pelicula)).where(Personaje.activo == True))
     return result.scalars().all()
 
 async def get_personaje_by_id(db: AsyncSession, personaje_id: int):
