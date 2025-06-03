@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Personaje{% endblock %}
+
+{% block content %}
+<h1 class="title">Editar Personaje</h1>
+
+<form action="/personajes/editar/{{ personaje.id }}" method="post" class="box">
+  <div class="field">
+    <label class="label">Nombre</label>
+    <div class="control">
+      <input class="input" type="text" name="nombre" value="{{ personaje.nombre }}">
+    </div>
+  </div>
+
+    <div class="field">
+        <label class="label">Película</label>
+        <div class="control">
+            <div class="select">
+                <select name="pelicula_id">
+                    {% for pelicula in peliculas %}
+                        <option value="{{ pelicula.id }}" {% if pelicula.id == personaje.pelicula_id %}selected{% endif %}>
+                            {{ pelicula.titulo }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+  <div class="field">
+    <label class="label">URL imagen</label>
+    <div class="control">
+      <input class="input" type="url" name="img_url" value="{{ personaje.img_url }}">
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="checkbox">
+      <input type="checkbox" name="protagonista" {% if personaje.protagonista %}checked{% endif %}>
+      Es protagonista
+    </label>
+  </div>
+
+  <button class="button is-primary" type="submit">Guardar cambios</button>
+</form>
+{% endblock %}

@@ -14,12 +14,30 @@
 
 <div class="columns is-multiline">
   {% for pelicula in peliculas %}
+  <div class="buttons mt-3">
+  <a href="/peliculas/{{ pelicula.id }}/personajes" class="button is-link is-small">
+    <span class="icon"><i class="fas fa-users"></i></span>
+    <span>Ver personajes</span>
+  </a>
+
+  <a href="/peliculas/editar/{{ pelicula.id }}" class="button is-info is-small">
+    <span class="icon"><i class="fas fa-edit"></i></span>
+    <span>Editar</span>
+  </a>
+
+  <form action="/peliculas/eliminar/{{ pelicula.id }}" method="post" style="display:inline;">
+    <button class="button is-danger is-small" type="submit" onclick="return confirm('¿Eliminar esta película?');">
+      <span class="icon"><i class="fas fa-trash"></i></span>
+      <span>Eliminar</span>
+    </button>
+  </form>
+</div>
   <div class="column is-one-quarter">
     <div class="card">
       <div class="card-image">
         {% if pelicula.img_url %}
         <figure class="image is-4by3">
-          <img src="{{ pelicula.img_url }}" alt="{{ pelicula.titulo }}">
+          <img src="{{ pelicula.img_url }}" alt="{{ pelicula.titulo }}" style="width: 180px; height: 180px; ">
         </figure>
         {% else %}
         <figure class="image is-4by3">

@@ -114,7 +114,47 @@ async def actualizar_pelicula(id: int, datos: PeliculaUpdate):
         await session.commit()
         await session.refresh(pelicula)
         return pelicula
+@app.get("/peliculas/editar/{pelicula_id}")
+async def mostrar_formulario_edicion_pelicula(
+    request: Request,
+    pelicula_id: int,
+    session: AsyncSession = Depends(get_async_session)
+):
+    result = await session.get(Pelicula, pelicula_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
 
+    return templates.TemplateResponse("editar_pelicula.html", {
+        "request": request,
+        "pelicula": result
+    })
+
+
+
+@app.post("/peliculas/editar/{pelicula_id}")
+async def editar_pelicula(
+    request: Request,
+    pelicula_id: int,
+    titulo: str = Form(...),
+    genero: str = Form(...),
+    anio: int = Form(...),
+    estudio: str = Form(...),
+    img_url: str = Form(""),
+    session: AsyncSession = Depends(get_async_session)
+):
+    pelicula = await session.get(Pelicula, pelicula_id)
+    if not pelicula:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+
+
+    pelicula.titulo = titulo or pelicula.titulo
+    pelicula.genero = genero or pelicula.genero
+    pelicula.anio = anio or pelicula.anio
+    pelicula.estudio = estudio or pelicula.estudio
+    pelicula.img_url = img_url or pelicula.img_url
+
+    await session.commit()
+    return RedirectResponse(url="/peliculas/view", status_code=303)
 
 @app.delete("/peliculas/{id}")
 async def eliminar_pelicula(id: int):
@@ -126,6 +166,16 @@ async def eliminar_pelicula(id: int):
         pelicula.activa = False
         await session.commit()
         return {"mensaje": "Película marcada como inactiva"}
+
+@app.post("/peliculas/eliminar/{pelicula_id}")
+async def eliminar_pelicula(pelicula_id: int, session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(select(Pelicula).where(Pelicula.id == pelicula_id))
+    pelicula = result.scalars().first()
+    if not pelicula:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+    await session.delete(pelicula)
+    await session.commit()
+    return RedirectResponse(url="/peliculas/view", status_code=303)
 
 
 @app.get("/peliculas/buscar_por_estudio/{estudio}", response_model=List[PeliculaResponse])
@@ -227,6 +277,51 @@ async def actualizar_personaje(id: int, datos: PersonajeUpdate):
         await session.commit()
         await session.refresh(personaje)
         return personaje
+@app.get("/personajes/editar/{personaje_id}")
+async def mostrar_formulario_edicion_personaje(
+    request: Request,
+    personaje_id: int,
+    session: AsyncSession = Depends(get_async_session)
+):
+    personaje_result = await session.execute(select(Personaje).where(Personaje.id == personaje_id))
+    personaje = personaje_result.scalars().first()
+
+    if not personaje:
+        raise HTTPException(status_code=404, detail="Personaje no encontrado")
+
+    peliculas_result = await session.execute(select(Pelicula))
+    peliculas = peliculas_result.scalars().all()
+
+    return templates.TemplateResponse("editar_personaje.html", {
+        "request": request,
+        "personaje": personaje,
+        "peliculas": peliculas
+    })
+@app.post("/personajes/editar/{personaje_id}")
+async def editar_personaje(
+    personaje_id: int,
+    nombre: str = Form(None),
+    img_url: str = Form(None),
+    protagonista: str = Form(None),
+    pelicula_id: int = Form(...),
+    session: AsyncSession = Depends(get_async_session)
+):
+    result = await session.execute(select(Personaje).where(Personaje.id == personaje_id))
+    personaje = result.scalars().first()
+
+    if not personaje:
+        raise HTTPException(status_code=404, detail="Personaje no encontrado")
+
+    if nombre:
+        personaje.nombre = nombre
+    if img_url is not None:
+        personaje.img_url = img_url
+
+    personaje.protagonista = protagonista == "on"
+    personaje.pelicula_id = pelicula_id
+
+    await session.commit()
+    return RedirectResponse(url="/personajes/view", status_code=303)
 
 
 @app.delete("/personajes/{id}")
@@ -239,6 +334,16 @@ async def eliminar_personaje(id: int):
         personaje.activo = False
         await session.commit()
         return {"mensaje": "Personaje marcado como inactivo"}
+
+@app.post("/personajes/eliminar/{personaje_id}")
+async def eliminar_personaje(personaje_id: int, session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(select(Personaje).where(Personaje.id == personaje_id))
+    personaje = result.scalars().first()
+    if not personaje:
+        raise HTTPException(status_code=404, detail="Personaje no encontrado")
+    await session.delete(personaje)
+    await session.commit()
+    return RedirectResponse(url="/personajes/view", status_code=303)
 
 
 @app.get("/personajes/buscar_por_pelicula/{titulo}", response_model=List[PersonajeCreate])

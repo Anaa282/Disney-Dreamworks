@@ -23,6 +23,19 @@
         <div class="detalle">Película: {{ personaje.pelicula.titulo }}</div>
         <div class="detalle">Protagonista: {{ 'Sí' if personaje.protagonista else 'No' }}</div>
     </div>
+    <div class="buttons mt-3">
+    <a href="/personajes/editar/{{ personaje.id }}" class="button is-info is-small">
+        <span class="icon"><i class="fas fa-edit"></i></span>
+        <span>Editar</span>
+    </a>
+
+    <form action="/personajes/eliminar/{{ personaje.id }}" method="post" style="display:inline;">
+        <button class="button is-danger is-small" type="submit" onclick="return confirm('¿Eliminar este personaje?');">
+            <span class="icon"><i class="fas fa-trash"></i></span>
+            <span>Eliminar</span>
+        </button>
+    </form>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}
