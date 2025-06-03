@@ -46,6 +46,7 @@ async def crear_pelicula(data: PeliculaCreate):
 async def leer_peliculas():
     async with async_session() as session:
         result = await session.execute(select(Pelicula).where(Pelicula.activa == True))
+
         return result.scalars().all()
 
 # Leer película por ID
@@ -110,6 +111,10 @@ async def leer_personajes():
     async with async_session() as session:
         result = await session.execute(select(Personaje).where(Personaje.activo==True).options(selectinload(Personaje.pelicula)))
         personajes = result.scalars().all()
+
+        if not personajes:
+            return JSONResponse(status_code=404, content={"message": "No hay personajes activos."})
+
 
         personajes_con_nombre = [
             PersonajeResponse(
