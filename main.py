@@ -146,15 +146,18 @@ async def crear_personaje(data: PersonajeCreate):
         return nuevo
 
 @app.get("/crear-personaje-form", response_class=HTMLResponse)
-async def mostrar_formulario_personaje(request: Request):
-    return templates.TemplateResponse("crear_personaje.html", {"request": request})
+async def mostrar_formulario_personaje(request: Request, session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(select(Pelicula).where(Pelicula.activa == True))
+    peliculas = result.scalars().all()
+    return templates.TemplateResponse("crear_personaje.html", {"request": request, "peliculas": peliculas})
+
 
 @app.post("/personajes/crear")
 async def crear_personaje_post(
     request: Request,
     nombre: str = Form(...),
-    pelicula: str = Form(...),
-    protagonista: bool = Form(False),
+    pelicula_id: int = Form(...),
+    protagonista: str = Form(None),
     img_url: str = Form(...),
     session: AsyncSession = Depends(get_async_session)
 ):
@@ -162,7 +165,7 @@ async def crear_personaje_post(
 
     nuevo = Personaje(
         nombre=nombre,
-        pelicula=pelicula,
+        pelicula_id=pelicula_id,
         protagonista=protagonista_bool,
         img_url=img_url,
         activo=True
@@ -170,6 +173,8 @@ async def crear_personaje_post(
     session.add(nuevo)
     await session.commit()
     return RedirectResponse("/personajes/view", status_code=303)
+
+
 
 @app.get("/personajes/", response_model=List[PersonajeResponse])
 async def leer_personajes():
