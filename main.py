@@ -1,8 +1,8 @@
 
-from fastapi import HTTPException, FastAPI, Request, Depends
+from fastapi import HTTPException, FastAPI, Request, Depends, Form
 from sqlalchemy.orm import selectinload
 from sqlalchemy.testing import db
-from starlette.responses import HTMLResponse
+from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
 from models import Personaje, Pelicula
@@ -105,7 +105,25 @@ async def crear_personaje(data: PersonajeCreate):
         nuevo = await create_personaje(session, data)
         return nuevo
 
-
+@app.post("/personajes/crear")
+async def crear_personaje_post(
+    request: Request,
+    nombre: str = Form(...),
+    pelicula: str = Form(...),
+    protagonista: bool = Form(False),
+    img_url: str = Form(...),
+    session: AsyncSession = Depends(get_async_session)
+):
+    nuevo = Personaje(
+        nombre=nombre,
+        pelicula=pelicula,
+        protagonista=protagonista,
+        img_url=img_url,
+        activo=True
+    )
+    session.add(nuevo)
+    await session.commit()
+    return RedirectResponse("/personajes/view", status_code=303)
 @app.get("/personajes/", response_model=List[PersonajeResponse])
 async def leer_personajes():
     async with async_session() as session:

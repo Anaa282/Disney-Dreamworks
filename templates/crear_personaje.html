@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Personaje{% endblock %}
+
+{% block content %}
+<h1 class="title">Crear nuevo personaje</h1>
+
+<form action="/personajes/crear" method="post" class="box">
+  <div class="field">
+    <label class="label">Nombre</label>
+    <div class="control">
+      <input class="input" type="text" name="nombre" placeholder="Ej: Shrek" required>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">Película</label>
+    <div class="control">
+      <input class="input" type="text" name="pelicula" placeholder="Ej: Shrek" required>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">¿Es protagonista?</label>
+    <div class="control">
+      <label class="checkbox">
+        <input type="checkbox" name="protagonista">
+        Sí
+      </label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">URL de imagen</label>
+    <div class="control">
+      <input class="input" type="url" name="img_url" placeholder="https://..." required>
+    </div>
+  </div>
+
+  <div class="field is-grouped">
+    <div class="control">
+      <button class="button is-primary" type="submit">
+        <span class="icon"><i class="fas fa-save"></i></span>
+        <span>Guardar</span>
+      </button>
+    </div>
+    <div class="control">
+      <a class="button is-light" href="/personajes/view">Cancelar</a>
+    </div>
+  </div>
+</form>
+{% endblock %}{% extends "base.html" %}
+
+{% block title %}Crear Personaje{% endblock %}
+
+{% block content %}
+<h1 class="title">Crear nuevo personaje</h1>
+
+<form action="/personajes/crear" method="post" class="box">
+  <div class="field">
+    <label class="label">Nombre</label>
+    <div class="control">
+      <input class="input" type="text" name="nombre" placeholder="Ej: Shrek" required>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">Película</label>
+    <div class="control">
+      <input class="input" type="text" name="pelicula" placeholder="Ej: Shrek" required>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">¿Es protagonista?</label>
+    <div class="control">
+      <label class="checkbox">
+        <input type="checkbox" name="protagonista">
+        Sí
+      </label>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">URL de imagen</label>
+    <div class="control">
+      <input class="input" type="url" name="img_url" placeholder="https://..." required>
+    </div>
+  </div>
+
+  <div class="field is-grouped">
+    <div class="control">
+      <button class="button is-primary" type="submit">
+        <span class="icon"><i class="fas fa-save"></i></span>
+        <span>Guardar</span>
+      </button>
+    </div>
+    <div class="control">
+      <a class="button is-light" href="/personajes/view">Cancelar</a>
+    </div>
+  </div>
+</form>
+{% endblock %}
