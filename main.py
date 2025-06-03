@@ -105,7 +105,7 @@ async def crear_personaje(data: PersonajeCreate):
         nuevo = await create_personaje(session, data)
         return nuevo
 
-@app.post("/personajes/crear")
+@app.post("/crear-personaje")
 async def crear_personaje_post(
     request: Request,
     nombre: str = Form(...),
@@ -124,6 +124,7 @@ async def crear_personaje_post(
     session.add(nuevo)
     await session.commit()
     return RedirectResponse("/personajes/view", status_code=303)
+
 @app.get("/personajes/", response_model=List[PersonajeResponse])
 async def leer_personajes():
     async with async_session() as session:
