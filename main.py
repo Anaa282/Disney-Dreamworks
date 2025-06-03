@@ -158,10 +158,12 @@ async def crear_personaje_post(
     img_url: str = Form(...),
     session: AsyncSession = Depends(get_async_session)
 ):
+    protagonista_bool = True if protagonista == "on" else False
+
     nuevo = Personaje(
         nombre=nombre,
         pelicula=pelicula,
-        protagonista=protagonista,
+        protagonista=protagonista_bool,
         img_url=img_url,
         activo=True
     )
