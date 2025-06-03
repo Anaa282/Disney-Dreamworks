@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Personajes de la Película{% endblock %}
+
+{% block content %}
+<h1 class="title">Personajes de la película ID: {{ pelicula_id }}</h1>
+
+<a href="/peliculas/view" class="button is-light mb-4">
+  <span class="icon"><i class="fas fa-arrow-left"></i></span>
+  <span>Volver a Películas</span>
+</a>
+
+{% if personajes %}
+<div class="columns is-multiline">
+  {% for personaje in personajes %}
+  <div class="column is-one-quarter">
+    <div class="card">
+      {% if personaje.img_url %}
+      <div class="card-image">
+        <figure class="image is-4by3">
+          <img src="{{ personaje.img_url }}" alt="{{ personaje.nombre }}">
+        </figure>
+      </div>
+      {% endif %}
+      <div class="card-content">
+        <p class="title is-5">{{ personaje.nombre }}</p>
+        <p>Protagonista: {{ 'Sí' if personaje.protagonista else 'No' }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No hay personajes registrados para esta película.</p>
+{% endif %}
+{% endblock %}

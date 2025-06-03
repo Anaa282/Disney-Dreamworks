@@ -32,7 +32,9 @@
         <p><strong>Género:</strong> {{ pelicula.genero }}</p>
         <p><strong>Año:</strong> {{ pelicula.anio }}</p>
         <p><strong>Estudio:</strong> {{ pelicula.estudio }}</p>
-        <p><strong>Activa:</strong> {{ 'Sí' if pelicula.activa else 'No' }}</p>
+          <a href="/peliculas/{{ pelicula.id }}/personajes" class="button is-link is-small mt-2">
+            <span class="icon"><i class="fas fa-users"></i></span>
+            <span>Ver personajes</span>
       </div>
     </div>
   </div>
