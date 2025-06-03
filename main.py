@@ -105,7 +105,11 @@ async def crear_personaje(data: PersonajeCreate):
         nuevo = await create_personaje(session, data)
         return nuevo
 
-@app.post("/crear-personaje")
+@app.get("/crear-personaje-form", response_class=HTMLResponse)
+async def mostrar_formulario_personaje(request: Request):
+    return templates.TemplateResponse("crear_personaje.html", {"request": request})
+
+@app.post("/personajes/crear")
 async def crear_personaje_post(
     request: Request,
     nombre: str = Form(...),
