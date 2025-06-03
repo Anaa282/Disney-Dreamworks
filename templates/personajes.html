@@ -5,12 +5,12 @@
 {% block content %}
 <h1>Lista de Personajes</h1>
 
-<div class="buttons">
-  <form class="button is-warning" method="/crear-personaje">
-    <span class="icon"><i class="fas fa-plus"></i></span>
-    <span>Crear Personaje</span>
-  </form>
-</div>
+<form action="/crear-personaje" method="post">
+    <button class="button is-warning">
+        <span class="icon"><i class="fas fa-plus"></i></span>
+        <span>Crear Personaje</span>
+    </button>
+</form>
 
 
 <div class="grid">
