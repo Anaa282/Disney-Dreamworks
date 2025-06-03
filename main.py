@@ -55,7 +55,7 @@ async def ver_peliculas(request: Request, session: AsyncSession = Depends(get_as
     return templates.TemplateResponse("peliculas.html", {"request": request,"peliculas": peliculas})
 
 
-@app.get("/peliculas/crear", response_model=List[PeliculaResponse])
+@app.get("/peliculas/crear", response_class=HTMLResponse)
 async def mostrar_formulario(request: Request):
     return templates.TemplateResponse("crear_pelicula.html", {"request": request})
 
@@ -78,12 +78,13 @@ async def crear_pelicula(
         anio=anio,
         estudio=estudio,
         img_url=img_url,
+        activa=True
 
     )
     session.add(nueva_pelicula)
     await session.commit()
 
-    return RedirectResponse(url="/pelicula/view", status_code=303)
+    return RedirectResponse(url="/peliculas/view", status_code=303)
 @app.get("/peliculas/{pelicula_id}/personajes", response_class=HTMLResponse)
 async def personajes_de_pelicula(pelicula_id: int, request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(select(Personaje).where(Personaje.pelicula_id == pelicula_id, Personaje.activo == True))
