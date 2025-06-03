@@ -83,7 +83,7 @@ async def crear_pelicula(
     session.add(nueva_pelicula)
     await session.commit()
 
-    return RedirectResponse(url="/crear_pelicula", status_code=303)
+    return RedirectResponse(url="/pelicula/view", status_code=303)
 @app.get("/peliculas/{pelicula_id}/personajes", response_class=HTMLResponse)
 async def personajes_de_pelicula(pelicula_id: int, request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(select(Personaje).where(Personaje.pelicula_id == pelicula_id, Personaje.activo == True))
