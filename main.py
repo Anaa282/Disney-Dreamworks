@@ -127,7 +127,10 @@ async def leer_personajes():
         ]
         return personajes_con_nombre
 
-
+@app.get("/personajes/view", response_class=HTMLResponse)
+async def mostrar_personajes_html(request: Request, session: AsyncSession = Depends(get_async_session)):
+    personajes = await get_personajes(session)
+    return templates.TemplateResponse("personajes.html", {"request": request, "personajes": personajes})
 
 @app.get("/personajes/{id}", response_model=PersonajeCreate)
 async def leer_personaje(id: int):

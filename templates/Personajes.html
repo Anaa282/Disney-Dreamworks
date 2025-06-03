@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Personajes{% endblock %}
+
+{% block content %}
+<h1>Lista de Personajes</h1>
+<div class="grid">
+    {% for personaje in personajes %}
+    <div class="card">
+        <img src="{{ personaje.img_url }}" alt="{{ personaje.nombre }}">
+        <div class="titulo">{{ personaje.nombre }}</div>
+        <div class="detalle">Película: {{ personaje.pelicula }}</div>
+        <div class="detalle">Protagonista: {{ 'Sí' if personaje.protagonista else 'No' }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
