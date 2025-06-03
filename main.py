@@ -41,7 +41,7 @@ async def crear_pelicula(data: PeliculaCreate):
         await session.refresh(nueva)
         return nueva
 
-# Leer todas las películas activas
+
 @app.get("/peliculas/", response_model=List[PeliculaResponse])
 async def leer_peliculas():
     async with async_session() as session:
@@ -66,7 +66,7 @@ async def crear_pelicula(
     genero: str = Form(...),
     anio: int = Form(...),
     estudio: str = Form(...),
-    url_imagen: str = Form(""),
+    img_url: str = Form(""),
     activa: str = Form(None)
 ):
     activa_bool = activa == "true"
@@ -76,7 +76,7 @@ async def crear_pelicula(
         genero=genero,
         anio=anio,
         estudio=estudio,
-        url_imagen=url_imagen,
+        img_url=img_url,
         activa=activa_bool,
     )
     session.add(nueva_pelicula)
@@ -85,7 +85,7 @@ async def crear_pelicula(
     return RedirectResponse(url="/crear-pelicula", status_code=303)
 @app.get("/peliculas/{pelicula_id}/personajes", response_class=HTMLResponse)
 async def personajes_de_pelicula(pelicula_id: int, request: Request, session: AsyncSession = Depends(get_async_session)):
-    result = await session.execute(select(Personaje).where(Personaje.pelicula_id == pelicula_id))
+    result = await session.execute(select(Personaje).where(Personaje.pelicula_id == pelicula_id, Personaje.activo == True))
     personajes = result.scalars().all()
 
     return templates.TemplateResponse("personajes_pelicula.html", {"request": request, "personajes": personajes})
