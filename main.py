@@ -48,6 +48,11 @@ async def leer_peliculas():
         result = await session.execute(select(Pelicula).where(Pelicula.activa == True))
 
         return result.scalars().all()
+@app.get("/peliculas/view", response_class=HTMLResponse)
+async def ver_peliculas(request: Request, session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(select(Pelicula).where(Pelicula.activa == True))
+    peliculas = result.scalars().all()
+    return templates.TemplateResponse("peliculas.html", {"request": request,"peliculas": peliculas})
 
 # Leer película por ID
 @app.get("/peliculas/{id}", response_model=PeliculaResponse)

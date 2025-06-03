@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Películas{% endblock %}
+
+{% block content %}
+<h1 class="title">Lista de Películas</h1>
+
+<div class="mb-4">
+  <a href="/peliculas/crear" class="button is-warning">
+    <span class="icon"><i class="fas fa-plus"></i></span>
+    <span>Crear Película</span>
+  </a>
+</div>
+
+<div class="columns is-multiline">
+  {% for pelicula in peliculas %}
+  <div class="column is-one-quarter">
+    <div class="card">
+      <div class="card-image">
+        {% if pelicula.img_url %}
+        <figure class="image is-4by3">
+          <img src="{{ pelicula.img_url }}" alt="{{ pelicula.titulo }}">
+        </figure>
+        {% else %}
+        <figure class="image is-4by3">
+          <img src="/static/default-img.png" alt="Imagen no disponible">
+        </figure>
+        {% endif %}
+      </div>
+      <div class="card-content">
+        <p class="title is-5">{{ pelicula.titulo }}</p>
+        <p><strong>Género:</strong> {{ pelicula.genero }}</p>
+        <p><strong>Año:</strong> {{ pelicula.anio }}</p>
+        <p><strong>Estudio:</strong> {{ pelicula.estudio }}</p>
+        <p><strong>Activa:</strong> {{ 'Sí' if pelicula.activa else 'No' }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
