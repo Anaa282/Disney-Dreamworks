@@ -382,10 +382,7 @@ async def filtrar_protagonistas():
         return result.scalars().all()
 
 @app.get("/personajes/filtrar/protagonistas", response_class=HTMLResponse)
-async def ver_protagonistas(
-    request: Request,
-    session: AsyncSession = Depends(get_async_session)
-):
-    result = await session.execute(select(Personaje).where(Personaje.protagonista == True))
+async def ver_protagonistas(request: Request, session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(select(Personaje).options(selectinload(Personaje.pelicula)).where(Personaje.protagonista == True))
     personajes = result.scalars().all()
     return templates.TemplateResponse("personajes.html", {"request": request, "personajes": personajes})
