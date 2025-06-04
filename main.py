@@ -212,7 +212,7 @@ async def filtrar_por_genero(genero: str):
 async def ver_historial_peliculas(request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(
         select(HistorialEliminacionPeliculas)
-        .where(HistorialEliminacionPeliculas.tipo == "pelicula")
+        .where(HistorialEliminacionPeliculas.tipo == "peliculas")
         .order_by(HistorialEliminacionPeliculas.fecha.desc())
     )
     historial = result.scalars().all()
