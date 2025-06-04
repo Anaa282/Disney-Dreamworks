@@ -386,3 +386,8 @@ async def ver_protagonistas(request: Request, session: AsyncSession = Depends(ge
     result = await session.execute(select(Personaje).options(selectinload(Personaje.pelicula)).where(Personaje.protagonista == True, Personaje.activo == True))
     personajes = result.scalars().all()
     return templates.TemplateResponse("personajes.html", {"request": request, "personajes": personajes})
+
+
+@app.get("/info/desarrollador", response_class=HTMLResponse)
+async def vista_desarrollador(request: Request):
+    return templates.TemplateResponse("info_desarrollador.html", {"request": request})
