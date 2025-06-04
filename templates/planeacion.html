@@ -1,15 +1,36 @@
 {% extends "base.html" %}
 
-{% block title %}Fase de Planeación{% endblock %}
+{% block title %}Planeación{% endblock %}
 
 {% block content %}
 <h1 class="title">Planeación del Proyecto</h1>
-<p><strong>Tema:</strong> Creación de API con diferentes funciones para peliculas y personajes de Disney y DreamWorks.</p>
-<p><strong>Desarrollo:</strong> Se fue implementando con FastAPI, luego se integró con HTML.</p>
-<p><strong>Diseño:</strong> Todo lo requerido para la creación del API</p>
-<ul>
-  <li>Modelos: ...</li>
-  <li>Estructuras: ...</li>
-  <li>Tecnologías: ...</li>
-</ul>
+
+<div class="content">
+  <h2 class="subtitle">Objetivos</h2>
+  <ul>
+    <li>Listar películas de Disney y DreamWorks según personajes, género y estudio.</li>
+    <li>Permitir el registro, visualización y consultas de peliculas y personajes.</li>
+  </ul>
+
+  <h2 class="subtitle">Fuente de Datos</h2>
+  <p>.</p>
+
+  <h2 class="subtitle">Casos de Uso</h2>
+  <ul>
+    <li>Registrar una película.</li>
+    <li>Registrar un personaje.</li>
+    <li>Listar películas y personajes activos.</li>
+    <li>Filtrar personajes por película.</li>
+    <li>Filtrar personajes protagonistas.</li>
+    <li>Busqueda de peliculas por estudio.</li>
+    <li>Eliminación de personajes y peliculas.</li>
+  </ul>
+
+  <h2 class="subtitle">Modelo de Datos</h2>
+  <p>Se utiliza una base de datos con dos entidades principales: <strong>Película</strong> y <strong>Personaje</strong>, relacionadas entre sí.</p>
+  <figure>
+    <img src="/static/modelo_datos.png" alt="Modelo de datos" style="max-width: 100%;">
+
+  </figure>
+</div>
 {% endblock %}
