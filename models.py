@@ -29,10 +29,18 @@ class Personaje(Base):
     pelicula = relationship("Pelicula", back_populates="personajes")
 
 
-class HistorialEliminacion(Base):
-    __tablename__ = "historial_eliminaciones"
+class HistorialEliminacionPeliculas(Base):
+    __tablename__ = "historial_eliminaciones_peliculas"
 
     id = Column(Integer, primary_key=True, index=True)
-    tipo = Column(String)  # "pelicula" o "personaje"
+    tipo = Column(String)
+    nombre = Column(String)
+    fecha = Column(DateTime, default=datetime.utcnow)
+
+class HistorialEliminacionPersonajes(Base):
+    __tablename__ = "historial_eliminaciones_personajes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tipo = Column(String)
     nombre = Column(String)
     fecha = Column(DateTime, default=datetime.utcnow)

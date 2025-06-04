@@ -175,7 +175,7 @@ async def eliminar_pelicula(pelicula_id: int, session: AsyncSession = Depends(ge
     if not pelicula:
         raise HTTPException(status_code=404, detail="Película no encontrada")
 
-    historial = HistorialEliminacion(
+    historial = HistorialEliminacionPeliculas(
         tipo="películas",
         nombre=pelicula.titulo,
         fecha=datetime.utcnow()
@@ -211,9 +211,9 @@ async def filtrar_por_genero(genero: str):
 @app.get("/historial/peliculas", response_class=HTMLResponse)
 async def ver_historial_peliculas(request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(
-        select(HistorialEliminacion)
-        .where(HistorialEliminacion.tipo == "pelicula")
-        .order_by(HistorialEliminacion.fecha.desc())
+        select(HistorialEliminacionPeliculas)
+        .where(HistorialEliminacionPeliculas.tipo == "pelicula")
+        .order_by(HistorialEliminacionPeliculas.fecha.desc())
     )
     historial = result.scalars().all()
     return templates.TemplateResponse("historial_pelis.html", {"request": request, "historial": historial})
@@ -373,7 +373,7 @@ async def eliminar_personaje(personaje_id: int, session: AsyncSession = Depends(
         raise HTTPException(status_code=404, detail="Personaje no encontrado")
 
 
-    historial = HistorialEliminacion(
+    historial = HistorialEliminacionPersonajes(
         tipo="personaje",
         nombre=personaje.nombre,
         fecha=datetime.utcnow()
@@ -424,9 +424,9 @@ async def vista_desarrollador(request: Request):
 @app.get("/historial/personajes", response_class=HTMLResponse)
 async def ver_historial_personajes(request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(
-        select(HistorialEliminacion)
-        .where(HistorialEliminacion.tipo == "personaje")
-        .order_by(HistorialEliminacion.fecha.desc())
+        select(HistorialEliminacionPersonajes)
+        .where(HistorialEliminacionPersonajes.tipo == "personaje")
+        .order_by(HistorialEliminacionPersonajes.fecha.desc())
     )
     historial = result.scalars().all()
     return templates.TemplateResponse("historial_personajes.html", {"request": request, "historial": historial})
