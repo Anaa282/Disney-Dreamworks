@@ -437,7 +437,7 @@ async def vista_desarrollador(request: Request):
 
 @app.get("/diseno")
 async def diseno(request: Request):
-    return templates.TemplateResponse("diseno.html", {"request": request})
+    return templates.TemplateResponse("disenio.html", {"request": request})
 
 @app.get("/planeacion")
 async def planeacion(request: Request):
