@@ -183,7 +183,7 @@ async def buscar_por_estudio(estudio: str):
     async with async_session() as session:
         result = await session.execute(select(Pelicula).where(Pelicula.estudio == estudio, Pelicula.activa == True))
         return result.scalars().all()
-@app.get("/peliculas/buscar", response_class=HTMLResponse)
+@app.get("/peliculas/search", response_class=HTMLResponse)
 async def buscar_peliculas_por_estudio(
     request: Request,
     estudio: str = Query(...),
@@ -381,7 +381,7 @@ async def filtrar_protagonistas():
         result = await session.execute(select(Personaje).where(Personaje.protagonista == True, Personaje.activo == True))
         return result.scalars().all()
 
-@app.get("/personajes/protagonistas", response_class=HTMLResponse)
+@app.get("/personajes/search", response_class=HTMLResponse)
 async def ver_protagonistas(
     request: Request,
     session: AsyncSession = Depends(get_async_session)
