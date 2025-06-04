@@ -208,16 +208,32 @@ async def filtrar_por_genero(genero: str):
         result = await session.execute(select(Pelicula).where(Pelicula.genero == genero, Pelicula.activa == True))
         return result.scalars().all()
 
-@app.get("/historial/peliculas", response_class=HTMLResponse)
-async def ver_historial_peliculas(request: Request, session: AsyncSession = Depends(get_async_session)):
-    result = await session.execute(
-        select(HistorialEliminacionPeliculas)
-        .where(HistorialEliminacionPeliculas.tipo == "peliculas")
-        .order_by(HistorialEliminacionPeliculas.fecha.desc())
-    )
-    historial = result.scalars().all()
-    return templates.TemplateResponse("historial_pelis.html", {"request": request, "historial": historial})
+@app.post("/peliculas/eliminar/{pelicula_id}")
+async def eliminar_pelicula(pelicula_id: int, session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(select(Pelicula).where(Pelicula.id == pelicula_id))
+    pelicula = result.scalars().first()
 
+    if not pelicula:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+
+
+    pelicula.activa = False
+
+
+    historial = HistorialEliminacionPeliculas(
+        tipo="peliculas",
+        nombre=pelicula.titulo,
+        fecha=datetime.utcnow()
+    )
+
+    try:
+        session.add(historial)
+        await session.commit()
+    except Exception as e:
+        await session.rollback()
+        raise HTTPException(status_code=500, detail="Error al eliminar película.")
+
+    return RedirectResponse(url="/peliculas/view", status_code=303)
 
 #----------------------------------------------------------------------------------------------------------------------------
 
