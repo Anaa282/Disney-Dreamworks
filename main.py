@@ -208,7 +208,7 @@ async def filtrar_por_genero(genero: str):
         result = await session.execute(select(Pelicula).where(Pelicula.genero == genero, Pelicula.activa == True))
         return result.scalars().all()
 
-@app.post("/peliculas/eliminar/{pelicula_id}")
+@app.get("/historial/peliculas", response_class=HTMLResponse)
 async def eliminar_pelicula(pelicula_id: int, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(select(Pelicula).where(Pelicula.id == pelicula_id))
     pelicula = result.scalars().first()
