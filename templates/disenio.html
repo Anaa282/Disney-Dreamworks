@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Diseño{% endblock %}
+
+{% block content %}
+<h1 class="title">Diseño del Proyecto</h1>
+
+<div class="content">
+  <h2 class="subtitle">Diagrama de Clases</h2>
+  <figure>
+    <img src="/static/diagramac.png" alt="Diagrama de clases" style="max-width: 100%;">
+  </figure>
+
+  <h2 class="subtitle">Endpoints</h2>
+  <figure>
+    <img src="/static/mapa.png" alt="Mapa de endpoints" style="max-width: 100%;">
+  </figure>
+
+  <h2 class="subtitle">Mockups</h2>
+  <p>Se diseñaron mockups simples para representar la interfaz de registro y visualización.</p>
+  <ul>
+    <li>Pantalla principal</li>
+    <li>Formulario de creación de personajes y peliculas</li>
+    <li>Lista de personajes y peliculas</li>
+    <li>Historial de eliminación de personajes y peliculas</li>
+    <li>Info de la desarrolladora, planeacion, diseño y objetivo</li>
+  </ul>
+  <figure>
+    <img src="/static/mockup_personajes.png" alt="Mockup personajes" style="max-width: 100%;">
+  </figure>
+</div>
+{% endblock %}

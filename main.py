@@ -420,9 +420,7 @@ async def ver_protagonistas(request: Request, session: AsyncSession = Depends(ge
     return templates.TemplateResponse("personajes.html", {"request": request, "personajes": personajes})
 
 
-@app.get("/info/desarrollador", response_class=HTMLResponse)
-async def vista_desarrollador(request: Request):
-    return templates.TemplateResponse("desarrollador.html", {"request": request})
+
 @app.get("/historial/personajes", response_class=HTMLResponse)
 async def ver_historial_personajes(request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(
@@ -432,4 +430,11 @@ async def ver_historial_personajes(request: Request, session: AsyncSession = Dep
     )
     historial = result.scalars().all()
     return templates.TemplateResponse("historial_personajes.html", {"request": request, "historial": historial})
+#----------------------------------------------------------------------------------------------------------------------------------------------
+@app.get("/info/desarrollador", response_class=HTMLResponse)
+async def vista_desarrollador(request: Request):
+    return templates.TemplateResponse("desarrollador.html", {"request": request})
 
+@app.get("/diseno")
+async def diseno(request: Request):
+    return templates.TemplateResponse("diseno.html", {"request": request})
