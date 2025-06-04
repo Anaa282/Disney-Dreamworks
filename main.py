@@ -3,6 +3,7 @@ from fastapi import HTTPException, FastAPI, Request, Depends, Form, Query
 from sqlalchemy.orm import selectinload
 from sqlalchemy.testing import db
 from starlette.responses import HTMLResponse, RedirectResponse
+from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 
 from models import Personaje, Pelicula
@@ -18,7 +19,7 @@ from operations import *
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
-
+app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
