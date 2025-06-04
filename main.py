@@ -1,5 +1,5 @@
 
-from fastapi import HTTPException, FastAPI, Request, Depends, Form
+from fastapi import HTTPException, FastAPI, Request, Depends, Form, Query
 from sqlalchemy.orm import selectinload
 from sqlalchemy.testing import db
 from starlette.responses import HTMLResponse, RedirectResponse
@@ -101,7 +101,7 @@ async def leer_pelicula(id: int):
             raise HTTPException(status_code=404, detail="Película no encontrada")
         return pelicula
 
-# Actualizar película
+
 @app.put("/peliculas/{id}", response_model=PeliculaResponse)
 async def actualizar_pelicula(id: int, datos: PeliculaUpdate):
     async with async_session() as session:
@@ -183,6 +183,15 @@ async def buscar_por_estudio(estudio: str):
     async with async_session() as session:
         result = await session.execute(select(Pelicula).where(Pelicula.estudio == estudio, Pelicula.activa == True))
         return result.scalars().all()
+@app.get("/peliculas/buscar", response_class=HTMLResponse)
+async def buscar_peliculas_por_estudio(
+    request: Request,
+    estudio: str = Query(...),
+    session: AsyncSession = Depends(get_async_session)
+):
+    result = await session.execute(select(Pelicula).where(Pelicula.estudio.ilike(f"%{estudio}%")))
+    peliculas = result.scalars().all()
+    return templates.TemplateResponse("peliculas.html", {"request": request, "peliculas": peliculas})
 
 @app.get("/peliculas/filtrar_por_genero/{genero}", response_model=List[PeliculaResponse])
 async def filtrar_por_genero(genero: str):
@@ -372,3 +381,11 @@ async def filtrar_protagonistas():
         result = await session.execute(select(Personaje).where(Personaje.protagonista == True, Personaje.activo == True))
         return result.scalars().all()
 
+@app.get("/personajes/protagonistas", response_class=HTMLResponse)
+async def ver_protagonistas(
+    request: Request,
+    session: AsyncSession = Depends(get_async_session)
+):
+    result = await session.execute(select(Personaje).where(Personaje.protagonista == True))
+    personajes = result.scalars().all()
+    return templates.TemplateResponse("personajes.html", {"request": request, "personajes": personajes})
