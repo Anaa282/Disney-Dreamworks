@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Historial de Personajes Eliminados{% endblock %}
+
+{% block content %}
+
+<section class="section">
+  <div class="container">
+    <h1 class="title has-text-centered">Historial de Personajes Eliminados</h1>
+    {% if historial %}
+      <table class="table is-striped is-fullwidth">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in historial %}
+          <tr>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.fecha.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="has-text-centered">No hay personajes eliminados aún.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

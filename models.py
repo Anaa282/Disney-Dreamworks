@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime
 from database import Base
 from sqlalchemy.orm import relationship
+from datetime import datetime
 
 class Pelicula(Base):
     __tablename__ = "peliculas"
@@ -26,3 +27,12 @@ class Personaje(Base):
     img_url = Column(String)
 
     pelicula = relationship("Pelicula", back_populates="personajes")
+
+
+class HistorialEliminacion(Base):
+    __tablename__ = "historial_eliminaciones"
+
+    id = Column(Integer, primary_key=True, index=True)
+    tipo = Column(String)  # "pelicula" o "personaje"
+    nombre = Column(String)
+    fecha = Column(DateTime, default=datetime.utcnow)

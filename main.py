@@ -174,6 +174,14 @@ async def eliminar_pelicula(pelicula_id: int, session: AsyncSession = Depends(ge
     pelicula = result.scalars().first()
     if not pelicula:
         raise HTTPException(status_code=404, detail="Película no encontrada")
+
+    historial = HistorialEliminacion(
+        tipo="Película",
+        nombre=pelicula.titulo,
+        fecha=datetime.utcnow()
+    )
+    session.add(historial)
+
     await session.delete(pelicula)
     await session.commit()
     return RedirectResponse(url="/peliculas/view", status_code=303)
@@ -200,6 +208,18 @@ async def filtrar_por_genero(genero: str):
         result = await session.execute(select(Pelicula).where(Pelicula.genero == genero, Pelicula.activa == True))
         return result.scalars().all()
 
+@app.get("/historial/peliculas", response_class=HTMLResponse)
+async def ver_historial_peliculas(request: Request, session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(
+        select(HistorialEliminacion)
+        .where(HistorialEliminacion.tipo == "pelicula")
+        .order_by(HistorialEliminacion.fecha.desc())
+    )
+    historial = result.scalars().all()
+    return templates.TemplateResponse("historial_pelis.html", {"request": request, "historial": historial})
+
+
+#----------------------------------------------------------------------------------------------------------------------------
 
 @app.post("/personajes/", response_model=PersonajeResponse)
 async def crear_personaje(data: PersonajeCreate):
@@ -351,6 +371,15 @@ async def eliminar_personaje(personaje_id: int, session: AsyncSession = Depends(
     personaje = result.scalars().first()
     if not personaje:
         raise HTTPException(status_code=404, detail="Personaje no encontrado")
+
+
+    historial = HistorialEliminacion(
+        tipo="Personaje",
+        nombre=personaje.nombre,
+        fecha=datetime.utcnow()
+    )
+    session.add(historial)
+
     await session.delete(personaje)
     await session.commit()
     return RedirectResponse(url="/personajes/view", status_code=303)
@@ -392,3 +421,13 @@ async def ver_protagonistas(request: Request, session: AsyncSession = Depends(ge
 @app.get("/info/desarrollador", response_class=HTMLResponse)
 async def vista_desarrollador(request: Request):
     return templates.TemplateResponse("desarrollador.html", {"request": request})
+@app.get("/historial/personajes", response_class=HTMLResponse)
+async def ver_historial_personajes(request: Request, session: AsyncSession = Depends(get_async_session)):
+    result = await session.execute(
+        select(HistorialEliminacion)
+        .where(HistorialEliminacion.tipo == "personaje")
+        .order_by(HistorialEliminacion.fecha.desc())
+    )
+    historial = result.scalars().all()
+    return templates.TemplateResponse("historial_personajes.html", {"request": request, "historial": historial})
+
