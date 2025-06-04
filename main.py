@@ -176,7 +176,7 @@ async def eliminar_pelicula(pelicula_id: int, session: AsyncSession = Depends(ge
         raise HTTPException(status_code=404, detail="Película no encontrada")
 
     historial = HistorialEliminacion(
-        tipo="Película",
+        tipo="película",
         nombre=pelicula.titulo,
         fecha=datetime.utcnow()
     )
@@ -374,7 +374,7 @@ async def eliminar_personaje(personaje_id: int, session: AsyncSession = Depends(
 
 
     historial = HistorialEliminacion(
-        tipo="Personaje",
+        tipo="personaje",
         nombre=personaje.nombre,
         fecha=datetime.utcnow()
     )
