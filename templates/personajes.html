@@ -23,7 +23,7 @@
         {% if personaje.img_url %}
             <img src="{{ personaje.img_url }}" alt="{{ personaje.nombre }}" style="width: 180px; height: 180px;">
         {% else %}
-            <img src="/static/default-img.png" alt="Imagen no disponible">
+            <img src="/templates/static/default-img.png" alt="Imagen no disponible">
 {% endif %}
         <div class="titulo">{{ personaje.nombre }}</div>
         <div class="detalle">Película: {{ personaje.pelicula.titulo }}</div>
