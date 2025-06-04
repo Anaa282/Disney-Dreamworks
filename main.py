@@ -390,4 +390,4 @@ async def ver_protagonistas(request: Request, session: AsyncSession = Depends(ge
 
 @app.get("/info/desarrollador", response_class=HTMLResponse)
 async def vista_desarrollador(request: Request):
-    return templates.TemplateResponse("info_desarrollador.html", {"request": request})
+    return templates.TemplateResponse("desarrollador.html", {"request": request})
