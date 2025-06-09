@@ -5,12 +5,12 @@
 {% block content %}
 <h1 class="title">Lista de Películas</h1>
 
-<div class="mb-4">
-  <a href="/peliculas/crear" class="button is-warning is-rounded">
+
+  <a href="/peliculas/crear" class="button is-warning is-rounded mb-2">
     <span class="icon"><i class="fas fa-plus"></i></span>
     <span>Crear Película</span>
   </a>
-</div>
+
 
 
 <form action="/peliculas/filtrar/estudio" method="get" style="display: inline-flex;">
@@ -19,7 +19,7 @@
       <input class="input" type="text" name="estudio" placeholder="Buscar por estudio">
     </div>
     <div class="control">
-      <button class="button is-info is-rounded" type="submit">
+      <button class="button is-info is-rounded mb-2" type="submit">
         <span class="icon"><i class="fas fa-search"></i></span>
         <span>Buscar</span>
       </button>
@@ -27,7 +27,7 @@
   </div>
 </form>
 
-<a href="/historial/peliculas" class="button is-danger is-light is-rounded">
+<a href="/historial/peliculas" class="button is-danger is-light is-rounded mb-2">
   <span class="icon"><i class="fas fa-user"></i></span>
   <span>Historial Peliculas</span>
 </a>
@@ -58,7 +58,7 @@
             <span>Ver personajes</span>
           </a>
 
-        <a href="/peliculas/editar/{{ pelicula.id }}" class="button is-info is-small">
+        <a href="/peliculas/editar/{{ pelicula.id }}" class="button is-info is-small mr-2">
           <span class="icon"><i class="fas fa-edit"></i></span>
           <span>Editar</span>
         </a>
@@ -74,4 +74,5 @@
     </div>
   </div>
   {% endfor %}
+</div>
 {% endblock %}
