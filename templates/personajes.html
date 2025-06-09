@@ -22,9 +22,11 @@
   <span>Historial Personajes</span>
 </a>
 
-<div class="column is-one-quarter">
+
 <div class="grid">
+    <div class="columns is-multiline">
     {% for personaje in personajes %}
+    <div class="column is-one-quarter">
     <div class="card">
         {% if personaje.img_url %}
             <img src="{{ personaje.img_url }}" alt="{{ personaje.nombre }}" style="width: 180px; height: 180px;">
@@ -48,6 +50,8 @@
         </div>
     </div>
 </div>
+
     {% endfor %}
+    </div>
 </div>
 {% endblock %}
