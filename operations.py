@@ -246,9 +246,9 @@ async def eliminar_historial(session: AsyncSession, personaje):
 
 async def get_protagonistas(session: AsyncSession):
     result = await session.execute(
-        select(Personaje).where(Personaje.protagonista == True, Personaje.activo == True)
-    )
+        select(Personaje).options(selectinload(Personaje.pelicula)).where(Personaje.protagonista == True, Personaje.activo == True))
     return result.scalars().all()
+
 
 async def get_historial_personajes(session: AsyncSession):
     result = await session.execute(

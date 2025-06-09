@@ -404,7 +404,7 @@ async def mostrar_formulario_edicion_personaje(
     if not personaje:
         raise HTTPException(status_code=404, detail="Personaje no encontrado")
 
-    peliculas = await get_todas_peliculas(session)
+    peliculas = await get_peliculas(session)
 
     return templates.TemplateResponse("editar_personaje.html", {
         "request": request,
@@ -554,6 +554,7 @@ async def ver_protagonistas(request: Request, session: AsyncSession = Depends(ge
     personajes = result.scalars().all()
     return templates.TemplateResponse("personajes.html", {"request": request, "personajes": personajes})
 '''
+
 @app.get("/personajes/filtrar/protagonistas", response_class=HTMLResponse)
 async def ver_protagonistas(request: Request, session: AsyncSession = Depends(get_async_session)):
     personajes = await get_protagonistas(session)
