@@ -200,4 +200,60 @@ async def eliminar_personaje(id: int):
         return personaje
 
 
+#--------------------------------------- pruebas perso ---------------------------------
 
+async def get_peliculas_activas(session: AsyncSession):
+    result = await session.execute(select(Pelicula).where(Pelicula.activa == True))
+    return result.scalars().all()
+
+async def crear_personaje_form(session: AsyncSession, nombre: str, pelicula_id: int, protagonista: str, img_url: str):
+    protagonista_bool = protagonista == "on"
+    nuevo = Personaje(
+        nombre=nombre,
+        pelicula_id=pelicula_id,
+        protagonista=protagonista_bool,
+        img_url=img_url,
+        activo=True
+    )
+    session.add(nuevo)
+    await session.commit()
+
+
+async def editar_personaje_form(session: AsyncSession, personaje, nombre, img_url, protagonista, pelicula_id):
+    if nombre:
+        personaje.nombre = nombre
+    if img_url is not None:
+        personaje.img_url = img_url
+    personaje.protagonista = protagonista == "on"
+    personaje.pelicula_id = pelicula_id
+    await session.commit()
+
+async def get_personaje_por_id(session: AsyncSession, personaje_id: int):
+    result = await session.execute(select(Personaje).where(Personaje.id == personaje_id))
+    return result.scalars().first()
+
+
+async def eliminar_historial(session: AsyncSession, personaje):
+    historial = HistorialEliminacionPersonajes(
+        tipo="personaje",
+        nombre=personaje.nombre,
+        fecha=datetime.utcnow()
+    )
+    session.add(historial)
+    await session.delete(personaje)
+    await session.commit()
+
+
+async def get_protagonistas(session: AsyncSession):
+    result = await session.execute(
+        select(Personaje).where(Personaje.protagonista == True, Personaje.activo == True)
+    )
+    return result.scalars().all()
+
+async def get_historial_personajes(session: AsyncSession):
+    result = await session.execute(
+        select(HistorialEliminacionPersonajes)
+        .where(HistorialEliminacionPersonajes.tipo == "personaje")
+        .order_by(HistorialEliminacionPersonajes.fecha.desc())
+    )
+    return result.scalars().all()

@@ -291,7 +291,7 @@ async def crear_personaje(data: PersonajeCreate):
     async with async_session() as session:
         nuevo = await create_personaje(session, data)
         return nuevo
-
+'''
 @app.get("/crear-personaje-form", response_class=HTMLResponse)
 async def mostrar_formulario_personaje(request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(select(Pelicula).where(Pelicula.activa == True))
@@ -320,9 +320,28 @@ async def crear_personaje_post(
     session.add(nuevo)
     await session.commit()
     return RedirectResponse("/personajes/view", status_code=303)
+'''
+@app.get("/crear-personaje-form", response_class=HTMLResponse)
+async def mostrar_formulario_personaje(request: Request, session: AsyncSession = Depends(get_async_session)):
+    peliculas = await get_peliculas_activas(session)
+    return templates.TemplateResponse("crear_personaje.html", {"request": request, "peliculas": peliculas})
+
+
+@app.post("/personajes/crear")
+async def crear_personaje_post(
+    request: Request,
+    nombre: str = Form(...),
+    pelicula_id: int = Form(...),
+    protagonista: str = Form(None),
+    img_url: str = Form(...),
+    session: AsyncSession = Depends(get_async_session)
+):
+    await crear_personaje_form(session, nombre, pelicula_id, protagonista, img_url)
+    return RedirectResponse("/personajes/view", status_code=303)
 
 
 
+'''
 @app.get("/personajes/", response_model=List[PersonajeResponse])
 async def leer_personajes():
     async with async_session() as session:
@@ -343,13 +362,13 @@ async def leer_personajes():
             for p in personajes
         ]
         return personajes_con_nombre
-
+'''
 
 @app.get("/personajes/view", response_class=HTMLResponse)
 async def mostrar_personajes_html(request: Request, session: AsyncSession = Depends(get_async_session)):
     personajes = await get_personajes(session)
     return templates.TemplateResponse("personajes.html", {"request": request, "personajes": personajes})
-
+'''
 @app.get("/personajes/{id}", response_model=PersonajeCreate)
 async def leer_personaje(id: int):
     async with async_session() as session:
@@ -358,6 +377,7 @@ async def leer_personaje(id: int):
         if personaje is None:
             raise HTTPException(status_code=404, detail="Personaje no encontrado")
         return personaje
+
 
 
 @app.put("/personajes/{id}", response_model=PersonajeCreate)
@@ -372,6 +392,45 @@ async def actualizar_personaje(id: int, datos: PersonajeUpdate):
         await session.commit()
         await session.refresh(personaje)
         return personaje
+'''
+
+@app.get("/personajes/editar/{personaje_id}")
+async def mostrar_formulario_edicion_personaje(
+    request: Request,
+    personaje_id: int,
+    session: AsyncSession = Depends(get_async_session)
+):
+    personaje = await get_personaje_por_id(session, personaje_id)
+    if not personaje:
+        raise HTTPException(status_code=404, detail="Personaje no encontrado")
+
+    peliculas = await get_todas_peliculas(session)
+
+    return templates.TemplateResponse("editar_personaje.html", {
+        "request": request,
+        "personaje": personaje,
+        "peliculas": peliculas
+    })
+
+
+@app.post("/personajes/editar/{personaje_id}")
+async def editar_personaje(
+    personaje_id: int,
+    nombre: str = Form(None),
+    img_url: str = Form(None),
+    protagonista: str = Form(None),
+    pelicula_id: int = Form(...),
+    session: AsyncSession = Depends(get_async_session)
+):
+    personaje = await get_personaje_por_id(session, personaje_id)
+    if not personaje:
+        raise HTTPException(status_code=404, detail="Personaje no encontrado")
+
+    await editar_personaje_form(session, personaje, nombre, img_url, protagonista, pelicula_id)
+    return RedirectResponse(url="/personajes/view", status_code=303)
+
+
+'''       
 @app.get("/personajes/editar/{personaje_id}")
 async def mostrar_formulario_edicion_personaje(
     request: Request,
@@ -417,8 +476,8 @@ async def editar_personaje(
 
     await session.commit()
     return RedirectResponse(url="/personajes/view", status_code=303)
-
-
+'''
+'''
 @app.delete("/personajes/{id}")
 async def eliminar_personaje(id: int):
     async with async_session() as session:
@@ -429,7 +488,18 @@ async def eliminar_personaje(id: int):
         personaje.activo = False
         await session.commit()
         return {"mensaje": "Personaje marcado como inactivo"}
+        
+'''
+@app.post("/personajes/eliminar/{personaje_id}")
+async def eliminar_personaje(personaje_id: int, session: AsyncSession = Depends(get_async_session)):
+    personaje = await get_personaje_por_id(session, personaje_id)
+    if not personaje:
+        raise HTTPException(status_code=404, detail="Personaje no encontrado")
 
+    await eliminar_historial(session, personaje)
+    return RedirectResponse(url="/personajes/view", status_code=303)
+
+'''
 @app.post("/personajes/eliminar/{personaje_id}")
 async def eliminar_personaje(personaje_id: int, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(select(Personaje).where(Personaje.id == personaje_id))
@@ -448,8 +518,8 @@ async def eliminar_personaje(personaje_id: int, session: AsyncSession = Depends(
     await session.delete(personaje)
     await session.commit()
     return RedirectResponse(url="/personajes/view", status_code=303)
-
-
+'''
+'''
 @app.get("/personajes/buscar_por_pelicula/{titulo}", response_model=List[PersonajeCreate])
 async def buscar_por_pelicula(titulo: str):
     async with async_session() as session:
@@ -467,23 +537,29 @@ async def buscar_por_pelicula(titulo: str):
             select(Personaje).where(Personaje.pelicula_id == pelicula.id, Personaje.activo == True)
         )
         return result.scalars().all()
+'''
 
-
-
+'''
 @app.get("/personajes/protagonistas", response_model=List[PersonajeCreate])
 async def filtrar_protagonistas():
     async with async_session() as session:
         result = await session.execute(select(Personaje).where(Personaje.protagonista == True, Personaje.activo == True))
         return result.scalars().all()
+'''
 
+'''
 @app.get("/personajes/filtrar/protagonistas", response_class=HTMLResponse)
 async def ver_protagonistas(request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(select(Personaje).options(selectinload(Personaje.pelicula)).where(Personaje.protagonista == True, Personaje.activo == True))
     personajes = result.scalars().all()
     return templates.TemplateResponse("personajes.html", {"request": request, "personajes": personajes})
+'''
+@app.get("/personajes/filtrar/protagonistas", response_class=HTMLResponse)
+async def ver_protagonistas(request: Request, session: AsyncSession = Depends(get_async_session)):
+    personajes = await get_protagonistas(session)
+    return templates.TemplateResponse("personajes.html", {"request": request, "personajes": personajes})
 
-
-
+'''
 @app.get("/historial/personajes", response_class=HTMLResponse)
 async def ver_historial_personajes(request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(
@@ -493,6 +569,13 @@ async def ver_historial_personajes(request: Request, session: AsyncSession = Dep
     )
     historial = result.scalars().all()
     return templates.TemplateResponse("historial_personajes.html", {"request": request, "historial": historial})
+'''
+
+@app.get("/historial/personajes", response_class=HTMLResponse)
+async def ver_historial_personajes(request: Request, session: AsyncSession = Depends(get_async_session)):
+    historial = await get_historial_personajes(session)
+    return templates.TemplateResponse("historial_personajes.html", {"request": request, "historial": historial})
+
 #----------------------------------------------------------------------------------------------------------------------------------------------
 @app.get("/info/desarrollador", response_class=HTMLResponse)
 async def vista_desarrollador(request: Request):
