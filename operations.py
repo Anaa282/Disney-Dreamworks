@@ -107,7 +107,7 @@ async def eliminar_pelicula_html(session: AsyncSession, pelicula_id: int):
     return True
 
 async def buscar_por_estudio(session: AsyncSession, estudio: str):
-    result = await session.execute(select(Pelicula).where(Pelicula.estudio.ilike(f"%{estudio}%")))
+    result = await session.execute(select(Pelicula).where(Pelicula.estudio.ilike(f"%{estudio}%"), Pelicula.activa==True))
     return result.scalars().all()
 
 async def historial_eliminacion_peliculas(session: AsyncSession):
