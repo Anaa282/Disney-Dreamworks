@@ -5,9 +5,9 @@ from models import *
 from schemas import PeliculaCreate, PersonajeCreate, PersonajeResponse
 from database import async_session
 from sqlalchemy.orm import joinedload, selectinload
+from datetime import datetime
 
-
-#PELICULAS
+#------------------------------------------- PELICULAS ------------------------------------
 
 
 async def create_pelicula(db: AsyncSession, pelicula: PeliculaCreate):
@@ -67,9 +67,58 @@ async def filtrar_peliculas_por_genero(genero: str):
             select(Pelicula).where(Pelicula.genero.ilike(genero))
         )
         return query.scalars().all()
+#--------------------------------------------------------- pruebas ------------------------------------------
+async def crear_pelicula_form(session: AsyncSession, titulo, genero, anio, estudio, img_url):
+    nueva = Pelicula(
+        titulo=titulo,
+        genero=genero,
+        anio=anio,
+        estudio=estudio,
+        img_url=img_url,
+        activa=True
+    )
+    session.add(nueva)
+    await session.commit()
 
+async def obtener_peli_id(session: AsyncSession, pelicula_id: int):
+    return await session.get(Pelicula, pelicula_id)
 
-# PERSONAJES
+async def editar_pelicula_html(session: AsyncSession, pelicula, titulo, genero, anio, estudio, img_url):
+    pelicula.titulo = titulo or pelicula.titulo
+    pelicula.genero = genero or pelicula.genero
+    pelicula.anio = anio or pelicula.anio
+    pelicula.estudio = estudio or pelicula.estudio
+    pelicula.img_url = img_url or pelicula.img_url
+    await session.commit()
+
+async def eliminar_pelicula_html(session: AsyncSession, pelicula_id: int):
+    result = await session.execute(select(Pelicula).where(Pelicula.id == pelicula_id))
+    pelicula = result.scalars().first()
+    if not pelicula:
+        return None
+    pelicula.activa = False
+    historial = HistorialEliminacionPeliculas(
+        tipo="peliculas",
+        nombre=pelicula.titulo,
+        fecha=datetime.utcnow()
+    )
+    session.add(historial)
+    await session.commit()
+    return True
+
+async def buscar_por_estudio(session: AsyncSession, estudio: str):
+    result = await session.execute(select(Pelicula).where(Pelicula.estudio.ilike(f"%{estudio}%")))
+    return result.scalars().all()
+
+async def historial_eliminacion_peliculas(session: AsyncSession):
+    result = await session.execute(
+        select(HistorialEliminacionPeliculas)
+        .where(HistorialEliminacionPeliculas.tipo == "peliculas")
+        .order_by(HistorialEliminacionPeliculas.fecha.desc())
+    )
+    return result.scalars().all()
+
+#------------------------------------------------------------------ PERSONAJES -----------------------------------------------
 
 async def create_personaje(db: AsyncSession, personaje: PersonajeCreate):
 
@@ -149,3 +198,6 @@ async def eliminar_personaje(id: int):
         personaje.activo = False
         await session.commit()
         return personaje
+
+
+

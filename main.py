@@ -32,7 +32,6 @@ async def general_exception_handler(request: Request, exc: Exception):
         content={"detail": str(exc)},
     )
 
-# Crear película
 @app.post("/peliculas/", response_model=PeliculaResponse)
 async def crear_pelicula(data: PeliculaCreate):
     async with async_session() as session:
@@ -49,6 +48,7 @@ async def leer_peliculas():
         result = await session.execute(select(Pelicula).where(Pelicula.activa == True))
 
         return result.scalars().all()
+
 @app.get("/peliculas/view", response_class=HTMLResponse)
 async def ver_peliculas(request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(select(Pelicula).where(Pelicula.activa == True))
@@ -60,6 +60,7 @@ async def ver_peliculas(request: Request, session: AsyncSession = Depends(get_as
 async def mostrar_formulario(request: Request):
     return templates.TemplateResponse("crear_pelicula.html", {"request": request})
 
+'''
 @app.post("/peliculas/crear")
 async def crear_pelicula(
     request: Request,
@@ -86,6 +87,23 @@ async def crear_pelicula(
     await session.commit()
 
     return RedirectResponse(url="/peliculas/view", status_code=303)
+    
+'''
+
+
+@app.post("/peliculas/crear")
+async def crear_pelicula(
+    request: Request,
+    titulo: str = Form(...),
+    genero: str = Form(...),
+    anio: int = Form(...),
+    estudio: str = Form(...),
+    img_url: str = Form(""),
+    session: AsyncSession = Depends(get_async_session)
+):
+    await crear_pelicula_form(session, titulo, genero, anio, estudio, img_url)
+    return RedirectResponse(url="/peliculas/view", status_code=303)
+
 @app.get("/peliculas/{pelicula_id}/personajes", response_class=HTMLResponse)
 async def personajes_de_pelicula(pelicula_id: int, request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(select(Personaje).where(Personaje.pelicula_id == pelicula_id, Personaje.activo == True))
@@ -102,7 +120,7 @@ async def leer_pelicula(id: int):
             raise HTTPException(status_code=404, detail="Película no encontrada")
         return pelicula
 
-
+'''
 @app.put("/peliculas/{id}", response_model=PeliculaResponse)
 async def actualizar_pelicula(id: int, datos: PeliculaUpdate):
     async with async_session() as session:
@@ -115,23 +133,39 @@ async def actualizar_pelicula(id: int, datos: PeliculaUpdate):
         await session.commit()
         await session.refresh(pelicula)
         return pelicula
+'''
+
+
 @app.get("/peliculas/editar/{pelicula_id}")
-async def mostrar_formulario_edicion_pelicula(
+async def mostrar_formulario(
     request: Request,
     pelicula_id: int,
     session: AsyncSession = Depends(get_async_session)
 ):
-    result = await session.get(Pelicula, pelicula_id)
-    if not result:
+    pelicula = await obtener_peli_id(session, pelicula_id)
+    if not pelicula:
         raise HTTPException(status_code=404, detail="Película no encontrada")
+    return templates.TemplateResponse("editar_pelicula.html", {"request": request, "pelicula": pelicula})
 
-    return templates.TemplateResponse("editar_pelicula.html", {
-        "request": request,
-        "pelicula": result
-    })
+@app.post("/peliculas/editar/{pelicula_id}")
+async def editar_pelicula(
+    request: Request,
+    pelicula_id: int,
+    titulo: str = Form(...),
+    genero: str = Form(...),
+    anio: int = Form(...),
+    estudio: str = Form(...),
+    img_url: str = Form(""),
+    session: AsyncSession = Depends(get_async_session)
+):
+    pelicula = await obtener_peli_id(session, pelicula_id)
+    if not pelicula:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+    await editar_pelicula_html(session, pelicula, titulo, genero, anio, estudio, img_url)
+    return RedirectResponse(url="/peliculas/view", status_code=303)
 
 
-
+'''
 @app.post("/peliculas/editar/{pelicula_id}")
 async def editar_pelicula(
     request: Request,
@@ -167,7 +201,9 @@ async def eliminar_pelicula(id: int):
         pelicula.activa = False
         await session.commit()
         return {"mensaje": "Película marcada como inactiva"}
+'''
 
+'''
 @app.post("/peliculas/eliminar/{pelicula_id}")
 async def eliminar_pelicula(pelicula_id: int, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(select(Pelicula).where(Pelicula.id == pelicula_id))
@@ -187,13 +223,22 @@ async def eliminar_pelicula(pelicula_id: int, session: AsyncSession = Depends(ge
     await session.commit()
 
     return RedirectResponse(url="/peliculas/view", status_code=303)
+'''
 
+@app.post("/peliculas/eliminar/{pelicula_id}")
+async def eliminar_pelicula(pelicula_id: int, session: AsyncSession = Depends(get_async_session)):
+    exito = await eliminar_pelicula_html(session, pelicula_id)
+    if not exito:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+    return RedirectResponse(url="/peliculas/view", status_code=303)
 
+'''
 @app.get("/peliculas/buscar_por_estudio/{estudio}", response_model=List[PeliculaResponse])
 async def buscar_por_estudio(estudio: str):
     async with async_session() as session:
         result = await session.execute(select(Pelicula).where(Pelicula.estudio == estudio, Pelicula.activa == True))
         return result.scalars().all()
+   
 @app.get("/peliculas/filtrar/estudio", response_class=HTMLResponse)
 async def buscar_peliculas_por_estudio(
     request: Request,
@@ -203,13 +248,26 @@ async def buscar_peliculas_por_estudio(
     result = await session.execute(select(Pelicula).where(Pelicula.estudio.ilike(f"%{estudio}%")))
     peliculas = result.scalars().all()
     return templates.TemplateResponse("peliculas.html", {"request": request, "peliculas": peliculas})
+'''
 
+@app.get("/peliculas/filtrar/estudio", response_class=HTMLResponse)
+async def buscar_peliculas_por_estudio(
+    request: Request,
+    estudio: str = Query(...),
+    session: AsyncSession = Depends(get_async_session)
+):
+    peliculas = await buscar_por_estudio(session, estudio)
+    return templates.TemplateResponse("peliculas.html", {"request": request, "peliculas": peliculas})
+
+'''
 @app.get("/peliculas/filtrar_por_genero/{genero}", response_model=List[PeliculaResponse])
 async def filtrar_por_genero(genero: str):
     async with async_session() as session:
         result = await session.execute(select(Pelicula).where(Pelicula.genero == genero, Pelicula.activa == True))
         return result.scalars().all()
+'''
 
+'''
 @app.get("/historial/peliculas", response_class=HTMLResponse)
 async def ver_historial_peliculas(request: Request, session: AsyncSession = Depends(get_async_session)):
     result = await session.execute(
@@ -219,7 +277,12 @@ async def ver_historial_peliculas(request: Request, session: AsyncSession = Depe
     )
     historial = result.scalars().all()
     return templates.TemplateResponse("historial_pelis.html", {"request": request, "historial": historial})
+'''
 
+@app.get("/historial/peliculas", response_class=HTMLResponse)
+async def ver_historial_peliculas(request: Request, session: AsyncSession = Depends(get_async_session)):
+    historial = await historial_eliminacion_peliculas(session)
+    return templates.TemplateResponse("historial_pelis.html", {"request": request, "historial": historial})
 
 #----------------------------------------------------------------------------------------------------------------------------
 
